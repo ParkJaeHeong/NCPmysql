@@ -1,0 +1,18 @@
+.card {
+  border: 1px solid #dadada;
+  background-color: #fff;
+  border-radius: 2px;
+  .box-shadow(1px 1px 2px 0 rgba(0, 0, 0, 0.03));
+}
+
+.card-hoverable {
+  .card();
+  display:block;
+  transition: all .3s ease;
+
+  &:hover {
+    text-decoration: none;
+    border-color: @brand-primary;
+    .box-shadow(0 10px 15px 0 rgba(0, 0, 0, 0.1));
+  }
+}

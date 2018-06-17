@@ -1,7 +1,11 @@
 <template>
   <div class="app">
     <my-header/>
-    <nuxt class="main pv-30"/>
+    <div class="main container">
+      <section class="panal card p-40 mv-md">   
+        <nuxt/>
+      </section>
+    </div>
     <my-footer/>
   </div>
 </template>
@@ -17,3 +21,9 @@ export default {
   }
 }
 </script>
+
+<style lang="less" scoped>
+  .app {
+    background-color: #f6f7f8;
+  }
+</style>
