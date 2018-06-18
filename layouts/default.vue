@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <my-header/>
-    <nuxt class="main pv-30"/>
+    <nuxt class="main pb-md"/>
     <my-footer/>
   </div>
 </template>
