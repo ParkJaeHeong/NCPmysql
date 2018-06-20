@@ -1,7 +1,7 @@
 <template>
   <header class="container-fluid clearfix">
     <h1 class="pt-20 pull-left"><nuxt-link :to="'/'">NAVER CLOUD PLATFORM</nuxt-link></h1>
-    <ul class="list-menu list-unstyled list-inline pull-right pt-20">
+    <ul class="list-menu list-inline pull-right pt-20">
       <li><nuxt-link :to="{ name: 'login' }" class="btn btn-sm btn-primary">로그인</nuxt-link></li>
       <li><nuxt-link :to="{ name: 'join' }" class="btn btn-sm btn-default">회원가입</nuxt-link></li>
     </ul>
