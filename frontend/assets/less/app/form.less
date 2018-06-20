@@ -68,4 +68,16 @@ label[check] {
       background-image: url('/icon/checkbox-on.svg');
     }
   }
+
+  &.circle-chx {
+    > input[type=checkbox] {
+      & + i {
+        background: url('/icon/checkbox2-off.svg') left -1px no-repeat;
+      }
+
+      &:checked + i {
+        background-image: url('/icon/checkbox2-on.svg');
+      }
+    }
+  }
 }
