@@ -11,18 +11,29 @@ export default {
   props: {
     inputData: {
       type: Object
-    },
-    nextFunc: {
-      type: Function
     }
   },
-  data () {
+  data() {
     return {
+      options: {
+        sortKey: 'order',
+        parentKey: 'parentId',
+        childrenKey: "children",
+      },
+      treeData: [
+        {
+          id: 1,
+          label: 'id: 1',
+          order: 0,
+          parentId: null,
+          children: []
+        }
+      ]
     }
   },
   methods: {
-    setServerImage (item) {
-      this.nextFunc()
+    getdata(){
+      this.formated = this.$refs.tree.reformatData();
     }
   }
 }

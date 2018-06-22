@@ -10,7 +10,7 @@
       <div class="form-group">
         <label for="username" class="col-sm-3 control-label">부팅 디스크 크기</label>
         <div class="col-sm-9">
-          <ul class="list-unstyle list-inline">
+          <ul class="list-inline">
             <li>
               <label class="md-check"><input type="radio" name="bootingDiskSizeRadio" value="53687091200" v-model="selected.bootingDiskSize"><i class="blue"></i>
                 50GB
@@ -28,7 +28,7 @@
       <div class="form-group">
         <label for="username" class="col-sm-3 control-label">이미지타입</label>
         <div class="col-sm-9">
-          <ul class="list-unstyle list-inline">
+          <ul class="list-inline">
             <li>
               <label class="md-check"><input type="radio" name="osTypeRadio" class="has-value" value="os" v-model="selected.osType"> <i class="blue"></i>
                 OS
@@ -46,7 +46,7 @@
       <div class="form-group" v-if="selected.osType === 'os'">
         <label for="username" class="col-sm-3 control-label">OS 이미지타입</label>
         <div class="col-sm-9">
-          <ul class="list-unstyle list-inline">
+          <ul class="list-inline">
             <li>
               <label class="md-check"><input type="radio" name="osDetailTypeRadio" class="has-value" value="ALL" v-model="selected.osDetailType"> <i class="blue"></i>
                 All
@@ -74,7 +74,7 @@
       <div class="form-group" v-if="selected.osType === 'db'">
         <label for="username" class="col-sm-3 control-label">Application 이미지타입</label>
         <div class="col-sm-9">
-          <ul class="list-unstyle list-inline">
+          <ul class="list-inline">
             <li>
               <label class="md-check"><input type="radio" name="dbmsOsDetailTypeRadio" class="has-value" value="ALL" v-model="selected.dbmsOsDetailType"> <i class="blue"></i>
                 All
@@ -147,18 +147,15 @@ export default {
     inputData: {
       type: Object
     },
+    selected: {
+      type: Object
+    },
     nextFunc: {
       type: Function
     }
   },
   data () {
     return {
-      selected: {
-        bootingDiskSize: "53687091200",
-        osType: 'os',
-        osDetailType: 'ALL',
-        dbmsOsDetailType: 'ALL'
-      },
       severImages: [
         { bootingDiskSize: '53687091200', osDetailType: 'LNX', dbmsOsDetailType: '', title: 'centos-7.3-64', description: 'CentOS 7.3 (64-bit)' },
         { bootingDiskSize: '53687091200', osDetailType: 'LNX', dbmsOsDetailType: '', title: 'centos-7.2-64', description: 'CentOS 7.2 (64-bit)' },
@@ -208,14 +205,11 @@ export default {
         { bootingDiskSize: '53687091200', osDetailType: 'WND', dbmsOsDetailType: 'MSSQL', title: 'mssql(2014std)-win-2012-64-R2', description: 'Windows Server 2012 R2 with MSSQL 2014 Standard (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' },
         { bootingDiskSize: '53687091200', osDetailType: 'WND', dbmsOsDetailType: 'MSSQL', title: 'mssql(2012std)-win-2012-64-R2', description: 'Windows Server 2012 R2 with MSSQL 2012 Standard (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' },
         { bootingDiskSize: '53687091200', osDetailType: 'WND', dbmsOsDetailType: 'MSSQL', title: 'mssql(2008std)-win-2008-64-R2', description: 'Windows Server 2008 R2 with MSSQL 2008 Standard (64-bit)(※ Micro, High-Memory 타입의 서버는 지원하지 않습니다.)' },
-        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsosDetailType: 'MSSQL', title: 'win-2008-64-R2-en', description: 'Windows Server 2008 R2 with SP1 (64-bit) English Edition(※ Micro 타입의 서버는 지원하지 않습니다.)' },
-        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsosDetailType: 'MSSQL', title: 'win-2012-64-R2-en', description: 'Windows Server 2012(64bit) R2 English Edition(※ Micro 타입의 서버는 지원하지 않습니다.)' },
-        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsosDetailType: 'MSSQL', title: 'win-2016-64-en', description: 'Windows Server 2016 (64-bit) English Edition(※ Micro 타입의 서버는 지원하지 않습니다.)' },
-        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsosDetailType: 'MSSQL', title: 'mssql(2016exp)-win-2012-64-R2', description: 'Windows Server 2012 R2 with MSSQL 2016 Express (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' },
-        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsosDetailType: 'MSSQL', title: 'mssql(2016std)-win-2012-64-R2', description: 'Windows Server 2012 R2 with MSSQL 2016 Standard (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' },
-        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsosDetailType: 'MSSQL', title: 'mssql(2014std)-win-2012-64-R2', description: 'Windows Server 2012 R2 with MSSQL 2014 Standard (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' },
-        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsosDetailType: 'MSSQL', title: 'mssql(2012std)-win-2012-64-R2', description: 'Windows Server 2012 R2 with MSSQL 2012 Standard (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' },
-        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsosDetailType: 'MSSQL', title: 'mssql(2008std)-win-2008-64-R2', description: 'Windows Server 2008 R2 with MSSQL 2008 Standard (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' }
+        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsOsDetailType: 'MSSQL', title: 'win-2008-64-R2-en', description: 'Windows Server 2008 R2 with SP1 (64-bit) English Edition(※ Micro 타입의 서버는 지원하지 않습니다.)' },
+        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsOsDetailType: 'MSSQL', title: 'win-2008-64-R2-en', description: 'Windows Server 2012(64bit) R2 English Edition(※ Micro 타입의 서버는 지원하지 않습니다.)' },
+        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsOsDetailType: 'MSSQL', title: 'mssql(2014std)-win-2012-64-R2', description: 'Windows Server 2012 R2 with MSSQL 2014 Standard (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' },
+        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsOsDetailType: 'MSSQL', title: 'mssql(2012std)-win-2012-64-R2', description: 'Windows Server 2012 R2 with MSSQL 2012 Standard (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' },
+        { bootingDiskSize: '107374182400', osDetailType: 'WND', dbmsOsDetailType: 'MSSQL', title: 'mssql(2008std)-win-2008-64-R2', description: 'Windows Server 2008 R2 with MSSQL 2008 Standard (64-bit)(※ Micro 타입의 서버는 지원하지 않습니다.)' }
       ]
     }
   },
@@ -242,4 +236,3 @@ export default {
   }
 }
 </script>
-
