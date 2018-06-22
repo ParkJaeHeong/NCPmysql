@@ -4,7 +4,7 @@
     <div class="form-horizontal">
       <h4>네트워크 접근 설정</h4>
       <p class="mt-10 color-gray">보유하고 있는 ACG를 선택하거나 새로운 ACG를 생성해주세요.<br>
-      <span class="color-primary">ACG(Access Control Group)은 별도의 방화벽 구축없이, 서버 그룹에 대한 네트워크 접근 제어 및 관리를 돕는 상품입니다.</span></p>
+        <span class="color-primary">ACG(Access Control Group)은 별도의 방화벽 구축없이, 서버 그룹에 대한 네트워크 접근 제어 및 관리를 돕는 상품입니다.</span></p>
       <hr class="mv-30" style="border-color: #000;">
 
       <section>
@@ -42,32 +42,32 @@
 </template>
 
 <script>
-import { Dropdown, MultiSelect } from 'uiv'
+  import {Dropdown, MultiSelect} from 'uiv'
 
-export default {
-  components: {
-    Dropdown,
-    MultiSelect
-  },
-  props: {
-    inputData: {
-      type: Object
+  export default {
+    components: {
+      Dropdown,
+      MultiSelect
     },
-    nextFunc: {
-      type: Function
-    }
-  },
-  data () {
-    return {
-      selected: [],
-      options: [
-        {value: 1, label:'Option1'},
-        {value: 2, label:'Option2'},
-        {value: 3, label:'Option3'},
-        {value: 4, label:'Option4'},
-        {value: 5, label:'Option5'}
-      ]
+    props: {
+      inputData: {
+        type: Object
+      },
+      nextFunc: {
+        type: Function
+      }
+    },
+    data () {
+      return {
+        selected: [],
+        options: [
+          {value: 1, label: 'Option1'},
+          {value: 2, label: 'Option2'},
+          {value: 3, label: 'Option3'},
+          {value: 4, label: 'Option4'},
+          {value: 5, label: 'Option5'}
+        ]
+      }
     }
   }
-}
 </script>

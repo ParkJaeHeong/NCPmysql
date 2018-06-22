@@ -1,4 +1,12 @@
+const webpack = require('webpack')
+
 module.exports = {
+  /*
+  ** Router config
+  */
+  router: {
+    middleware: [ 'check-auth' ]
+  },
   /*
   ** Headers of the page
   */
@@ -27,26 +35,32 @@ module.exports = {
   ** Add axios globally
   */
   build: {
-    vendor: ['axios']
-    // /*
-    // ** Run ESLINT on save
-    // */
-    // extend (config, ctx) {
-    //   if (ctx.isDev && ctx.isClient) {
-    //     config.module.rules.push({
-    //       enforce: 'pre',
-    //       test: /\.(js|vue)$/,
-    //       loader: 'eslint-loader',
-    //       exclude: /(node_modules)/
-    //     })
-    //   }
-    // }
+    vendor: [
+      'axios',
+      'vee-validate'
+    ],
+    plugins: [
+      new webpack.ProvidePlugin({
+        '$': 'jquery',
+        jQuery: 'jquery'
+      })
+    ],
+    /*
+    ** Run ESLINT on save
+    */
+    extend (config, ctx) {
+      if (ctx.dev && ctx.isClient) {
+        config.module.rules.push({
+          enforce: 'pre',
+          test: /\.(js|vue)$/,
+          loader: 'eslint-loader',
+          exclude: /(node_modules)/
+        })
+      }
+    }
   },
-  serverMiddleware: [
-    // API middleware
-    '~/api/index.js'
-  ],
   plugins: [
-    '~plugins/vue-drag-sort-tree'
+    {src: '~/plugins/vee-validate.js'},
+    {src: '~/plugins/vue-authenticate.js', ssr: false}
   ]
 }

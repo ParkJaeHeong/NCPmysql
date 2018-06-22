@@ -5,7 +5,7 @@
       <h2>서버 생성</h2>
       <p class="mt-10 color-gray-light">새로운 VM 서버를 생성합니다</p>
     </header>
-    
+
     <div class="row">
       <div class="col-sm-12 col-md-10 col-md-push-1">
 
@@ -28,68 +28,68 @@
         <nuxt-link to="/" class="btn-next btn btn-lg btn-primary">확인</nuxt-link>
       </template>
     </div>
-    
+
   </section>
 </template>
 
 <script>
-import step1 from '~/components/server/step1.vue'
-import step2 from '~/components/server/step2.vue'
-import step3 from '~/components/server/step3.vue'
-import step4 from '~/components/server/step4.vue'
-import step5 from '~/components/server/step5.vue'
-import step6 from '~/components/server/step6.vue'
+  import step1 from '~/components/server/step1.vue'
+  import step2 from '~/components/server/step2.vue'
+  import step3 from '~/components/server/step3.vue'
+  import step4 from '~/components/server/step4.vue'
+  import step5 from '~/components/server/step5.vue'
+  import step6 from '~/components/server/step6.vue'
 
-export default {
-  components: {
-    step1,
-    step2,
-    step3,
-    step4,
-    step5,
-    step6
-  },
-  data () {
-    return {
-      stepNum: 5,
-      maxStepNum: 6,
-      selected: {
-        serverImg: {
-          bootingDiskSize: "53687091200",
-          osType: 'os',
-          osDetailType: 'ALL',
-          dbmsOsDetailType: 'ALL'
-        }
-      },
-      inputData: {
-        serverImg: {
-          name: null,
-          description: null
+  export default {
+    components: {
+      step1,
+      step2,
+      step3,
+      step4,
+      step5,
+      step6
+    },
+    data () {
+      return {
+        stepNum: 5,
+        maxStepNum: 6,
+        selected: {
+          serverImg: {
+            bootingDiskSize: 53687091200,
+            osType: 'os',
+            osDetailType: 'ALL',
+            dbmsOsDetailType: 'ALL'
+          }
         },
-        server: {
-          storageType: 'SSD',
-          FeeSystemType: 'FXSUM',
-          serverNum: 1,
-          serverName: '',
-          returnProtection: 'TRUE'
-        },
-        authentication: {
-          authentication: 'sel',
-          name: ''
-        },
-        setUpAcg: {
-          type: 'new',
-          name: ''
+        inputData: {
+          serverImg: {
+            name: null,
+            description: null
+          },
+          server: {
+            storageType: 'SSD',
+            FeeSystemType: 'FXSUM',
+            serverNum: 1,
+            serverName: '',
+            returnProtection: 'TRUE'
+          },
+          authentication: {
+            authentication: 'sel',
+            name: ''
+          },
+          setUpAcg: {
+            type: 'new',
+            name: ''
+          }
         }
       }
-    }
-  },
-  methods: {
-    goNext() {
-      this.stepNum++
+    },
+    methods: {
+      goNext () {
+        this.stepNum++
+      }
     }
   }
-}
 </script>
 
 <style lang="less" scoped>
