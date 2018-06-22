@@ -7,12 +7,12 @@
         <span class="color-primary">ACG(Access Control Group)은 별도의 방화벽 구축없이, 서버 그룹에 대한 네트워크 접근 제어 및 관리를 돕는 상품입니다.</span></p>
       <hr class="mv-30" style="border-color: #000;">
 
-      <section>
-        <label class="md-check"><input type="radio" name="setUpAcg" value="new" v-model="inputData.type"> <i class="blue"></i>
-          신규 ACG 생성
-        </label>
-        <button type="button" class="btn btn-sm btn-primary ml-20" v-if="inputData.type === 'new'">+ ACG 생성</button>
-      </section>
+      <!--<section>-->
+        <!--<label class="md-check"><input type="radio" name="setUpAcg" value="new" v-model="inputData.type"> <i class="blue"></i>-->
+          <!--신규 ACG 생성-->
+        <!--</label>-->
+        <!--<button type="button" class="btn btn-sm btn-primary ml-20" v-if="inputData.type === 'new'">+ ACG 생성</button>-->
+      <!--</section>-->
 
       <section class="mt-10">
         <label class="md-check"><input type="radio" name="setUpAcg" value="sel" v-model="inputData.type"> <i class="blue"></i>
@@ -20,10 +20,16 @@
         </label>
         <template v-if="inputData.type === 'sel'">
           <div class="form-group">
-            <label for="username" class="col-sm-2 control-label">인증키 이름</label>
+            <label class="col-sm-2 control-label">인증키 이름</label>
             <div class="col-sm-9 input-wrap">
-              <multi-select v-model="selected" :options="options"/>
-              <p class="color-gray mt-10">최대 5개까지 선택가능</p>
+              <dropdown ref="dropdown">
+                <btn type="default" class="dropdown-toggle">{{ inputData.name }}<span class="caret ml-10"></span></btn>
+                <template slot="dropdown">
+                  <li class="dropdown-item" @click="inputData.name = 'ncloud-default-acg(47712)'"><a>ncloud-default-acg(47712)</a></li>
+                </template>
+              </dropdown>
+              <!--<multi-select v-model="selected" :options="options"/>-->
+              <!--<p class="color-gray mt-10">최대 5개까지 선택가능</p>-->
             </div>
           </div>
           <p>설정 시 주의사항</p>
@@ -42,11 +48,12 @@
 </template>
 
 <script>
-  import {Dropdown, MultiSelect} from 'uiv'
+  import {Dropdown, Btn, MultiSelect} from 'uiv'
 
   export default {
     components: {
       Dropdown,
+      Btn,
       MultiSelect
     },
     props: {
@@ -59,9 +66,10 @@
     },
     data () {
       return {
+        isOpen: false,
         selected: [],
         options: [
-          {value: 1, label: 'Option1'},
+          {value: 1, label: 'ncloud-default-acg(47712)'},
           {value: 2, label: 'Option2'},
           {value: 3, label: 'Option3'},
           {value: 4, label: 'Option4'},

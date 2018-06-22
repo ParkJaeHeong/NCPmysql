@@ -7,25 +7,30 @@
     </header>
 
     <div class="row">
+      <div class="col-sm-8 col-sm-push-2">
+        <StepMark class="mb-md"
+                  :titles="['서버 이미지 선택', '서버 설정', '인증키 설정', '네트워크 접근 설정', '복제 환경 설정', '최종 확인']"
+                  :stepActive="stepNum" />
+      </div>
       <div class="col-sm-12 col-md-10 col-md-push-1">
 
-        <step1 :inputData="inputData.serverImg" :selected="selected.serverImg" :nextFunc="goNext" v-if="stepNum === 1"/>
+        <step1 :inputData="inputData.serverImg" :nextFunc="goNext" v-if="stepNum === 1"/>
         <step2 :inputData="inputData.server" :nextFunc="goNext" v-if="stepNum === 2"/>
         <step3 :inputData="inputData.authentication" v-if="stepNum === 3"/>
         <step4 :inputData="inputData.setUpAcg" v-if="stepNum === 4"/>
-        <step5 v-if="stepNum === 5"/>
-        <step6 v-if="stepNum === 6"/>
+        <step5 :data="inputData.server" v-if="stepNum === 5"/>
+        <step6 :data="inputData" v-if="stepNum === 6"/>
 
       </div>
     </div>
 
     <div class="text-center mt-40">
-      <template v-if="stepNum !== 1 && stepNum !== maxStepNum">
+      <template v-if="stepNum !== 1">
         <button type="button" class="btn-prev btn btn-lg btn-default" @click="stepNum--" v-if="stepNum !== 1">이전</button>
-        <button type="button" class="btn-next btn btn-lg btn-primary" @click="stepNum++">다음</button>
+        <button type="button" class="btn-next btn btn-lg btn-primary" @click="stepNum++" v-if="stepNum !== maxStepNum">다음</button>
       </template>
       <template v-if="stepNum === maxStepNum">
-        <nuxt-link to="/" class="btn-next btn btn-lg btn-primary">확인</nuxt-link>
+        <nuxt-link to="/" class="btn-next btn btn-lg btn-primary">서버 생성</nuxt-link>
       </template>
     </div>
 
@@ -33,6 +38,7 @@
 </template>
 
 <script>
+  import StepMark from '~/components/StepMark'
   import step1 from '~/components/server/step1.vue'
   import step2 from '~/components/server/step2.vue'
   import step3 from '~/components/server/step3.vue'
@@ -42,6 +48,7 @@
 
   export default {
     components: {
+      StepMark,
       step1,
       step2,
       step3,
@@ -51,35 +58,36 @@
     },
     data () {
       return {
-        stepNum: 5,
+        stepNum: 6,
         maxStepNum: 6,
-        selected: {
+        inputData: {
           serverImg: {
+            name: 'centos-7.3-64', // null
+            description: 'CentOS 7.3 (64-bit)', // null
             bootingDiskSize: 53687091200,
             osType: 'os',
             osDetailType: 'ALL',
             dbmsOsDetailType: 'ALL'
-          }
-        },
-        inputData: {
-          serverImg: {
-            name: null,
-            description: null
           },
           server: {
             storageType: 'SSD',
             FeeSystemType: 'FXSUM',
-            serverNum: 1,
-            serverName: '',
-            returnProtection: 'TRUE'
+            serverNum: 5,
+            serverName: 'abc',
+            returnProtection: 'TRUE',
+            zone: 'KR-2',
+            type: '전체',
+            typeName: '선택해주세요'
           },
           authentication: {
             authentication: 'sel',
-            name: ''
+            name: '선택해주세요',
+            addName: null,
+            list: []
           },
           setUpAcg: {
-            type: 'new',
-            name: ''
+            type: 'sel',
+            name: '선택해주세요'
           }
         }
       }

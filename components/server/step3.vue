@@ -11,9 +11,14 @@
           보유하고 있는 인증키 이용
         </label>
         <div class="form-group" v-if="inputData.authentication === 'sel'">
-          <label for="username" class="col-sm-2 control-label">인증키 선택</label>
+          <label class="col-sm-2 control-label">인증키 선택</label>
           <div class="col-sm-9 input-wrap">
-            <dropdown>- select -</dropdown>
+            <dropdown ref="dropdown">
+              <btn type="default" class="dropdown-toggle">{{ inputData.name }}<span class="caret ml-10"></span></btn>
+              <template slot="dropdown">
+                <li class="dropdown-item" v-for="title in inputData.list" @click="inputData.name = title"><a>{{title}}</a></li>
+              </template>
+            </dropdown>
           </div>
         </div>
       </section>
@@ -23,11 +28,16 @@
           새로운 인증키 생성
         </label>
         <div class="form-group" v-if="inputData.authentication === 'new'">
-          <label for="username" class="col-sm-2 control-label">인증키 이름</label>
-          <div class="col-sm-9 input-wrap">
-            <input placeholder="최소 3글자, 최대 30자" v-model="inputData.name">
+          <label class="col-sm-2 control-label">인증키 이름</label>
+          <div class="col-sm-8 input-wrap">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="최소 3글자, 최대 30자" v-model="inputData.addName">
+              <span class="input-group-btn">
+                <btn type="default" @click="addAuthentication(inputData.addName)">인증키 생성 및 저장</btn>
+              </span>
+            </div>
             <p class="color-gray-light mt-20">인증키 이름을 입력 후 <span class="color-gray-darker">[인증키 생성 및 저장]</span>를 클릭하여 인증키를 사용자 컴퓨터에 저장하세요.<br>
-            인증키는 해당 서버의 <span class="color-gray-darker">관리자 비밀번호 확인</span>에 이용되니 <span class="color-gray-darker">안전한 곳에 저장</span>하시기 바랍니다</p>
+              인증키는 해당 서버의 <span class="color-gray-darker">관리자 비밀번호 확인</span>에 이용되니 <span class="color-gray-darker">안전한 곳에 저장</span>하시기 바랍니다</p>
           </div>
         </div>
       </section>
@@ -39,22 +49,28 @@
 </template>
 
 <script>
-import { Dropdown } from 'uiv'
+  import {Dropdown, Btn} from 'uiv'
 
-export default {
-  components: {
-    Dropdown
-  },
-  props: {
-    inputData: {
-      type: Object
+  export default {
+    components: {
+      Dropdown,
+      Btn
     },
-    selected: {
-      type: Object
+    props: {
+      inputData: {
+        type: Object
+      },
+      nextFunc: {
+        type: Function
+      }
     },
-    nextFunc: {
-      type: Function
+    methods: {
+      addAuthentication (name) {
+        this.inputData.list.push(name)
+        this.inputData.addName = ''
+        this.inputData.authentication = 'sel'
+        console.log(this.inputData.list)
+      }
     }
   }
-}
 </script>
