@@ -51,7 +51,7 @@ export default {
   },
   data () {
     return {
-      stepNum: 5,
+      stepNum: 1,
       maxStepNum: 6,
       selected: {
         serverImg: {
@@ -87,7 +87,7 @@ export default {
   methods: {
     goNext() {
       this.stepNum++
-    }
+    },
   }
 }
 </script>

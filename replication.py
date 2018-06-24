@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import json
 import sys
 import paramiko
@@ -5,12 +7,7 @@ import time
 
 serverlist = ["106.10.42.67", "106.10.42.44", "106.10.42.151", "106.10.42.158", "106.10.42.161"]
 
-data = [
-        { "id": "1", "master": "null"},
-        { "id": "2", "master": "1"},
-        { "id": "3", "master": "1", "slave": "4"},
-        { "id": "4", "master": "3"}
-        ]
+data = json.loads(sys.argv[1])
 
 # 입력받은 개수 만큼 서버 할당
 for i in range(0, len(data)) :
