@@ -162,15 +162,15 @@
         this.serverList = []
         this.setServerList(item.serverNum + 1)
         if (item.id === 1) {
-          this.serverStructure = [{key: 1, title: 'abc_001', children: [{key: 2, title: 'abc_002'}]}]
+          this.serverStructure = [{key: 1, title: `${this.data.serverName}001`, children: [{key: 2, title: `${this.data.serverName}002`}]}]
         } else if (item.id === 2) {
-          this.serverStructure = [ { key: 1, title: 'abc_001', children: [ { key: 2, title: 'abc_002' }, { key: 3, title: 'abc_003' } ] } ]
+          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002` }, { key: 3, title: `${this.data.serverName}003` } ] } ]
         } else if (item.id === 3) {
-          this.serverStructure = [ { key: 1, title: 'abc_001', children: [ { key: 2, title: 'abc_002', children: [ { key: 3, title: 'abc_003' } ] } ] } ]
+          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002`, children: [ { key: 3, title: `${this.data.serverName}003` } ] } ] } ]
         } else if (item.id === 4) {
-          this.serverStructure = [ { key: 1, title: 'abc_001', children: [ { key: 2, title: 'abc_002' }, { key: 3, title: 'abc_003' }, { key: 4, title: 'abc_004' } ] } ]
+          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002` }, { key: 3, title: `${this.data.serverName}003` }, { key: 4, title: `${this.data.serverName}004` } ] } ]
         } else if (item.id === 5) {
-          this.serverStructure = [ { key: 1, title: 'abc_001', children: [ { key: 2, title: 'abc_002', children: [ { key: 3, title: 'abc_003' }, { key: 4, title: 'abc_004' } ] } ] } ]
+          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002`, children: [ { key: 3, title: `${this.data.serverName}003` }, { key: 4, title: `${this.data.serverName}004` } ] } ] } ]
         }
       },
       addServer () {
@@ -178,7 +178,7 @@
         this.data.serverNum++
         let tempObject = {
           key: this.data.serverNum,
-          title: `${this.data.serverName}_00${this.data.serverNum}`
+          title: `${this.data.serverName}00${this.data.serverNum}`
         }
         this.serverList.push(tempObject)
       },
@@ -198,18 +198,10 @@
         }
       },
       resetServer () {
-        console.log('resetServer')
-        if (this.data.template === '템플릿 선택') {
-          this.serverStructure = JSON.parse(JSON.stringify(this.initList))
-          this.serverList = []
-          this.setServerList(2)
-        } else {
-          for (let i in this.serverTemplate) {
-            if (this.serverTemplate[i].title === this.data.template) {
-              this.setTemplate(this.serverTemplate[i])
-            }
-          }
-        }
+        this.serverStructure = JSON.parse(JSON.stringify(this.initList))
+        this.serverList = []
+        this.setServerList(2)
+        this.data.template = '템플릿 선택'
       },
       setSettingList (Object, key) {
         this.pushSettingList(Object, key)

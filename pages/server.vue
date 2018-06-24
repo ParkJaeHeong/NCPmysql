@@ -63,6 +63,8 @@
             FeeSystemType: 'FXSUM',
             serverNum: 1,
             serverName: null,
+            cloneId: null,
+            clonePw: null,
             returnProtection: 'TRUE',
             type: '전체',
             typeName: '[Compact] vCPU 1개, 메모리 2GB, [SSD]디스크 50GB',

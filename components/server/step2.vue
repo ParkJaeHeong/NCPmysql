@@ -92,6 +92,20 @@
       </div>
 
       <div class="form-group">
+        <label class="col-sm-3 control-label">복제 계정</label>
+        <div class="col-sm-9 input-wrap">
+          <input type="text" name="cloneId" :class="{ 'err': errors.has('cloneId') }" v-model="inputData.cloneId" v-validate="'required'">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">복제 비밀번호</label>
+        <div class="col-sm-9 input-wrap">
+          <input type="password" name="clonePw" :class="{ 'err': errors.has('clonePw') }" v-model="inputData.clonePw" v-validate="'required'">
+        </div>
+      </div>
+
+      <div class="form-group">
         <label class="col-sm-3 control-label">반납 보호</label>
         <div class="col-sm-9">
           <ul class="list-inline">
