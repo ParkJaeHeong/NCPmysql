@@ -1,6 +1,6 @@
 <template>
   <section id="login">
-  
+
     <h2 class="text-center">로그인</h2>
     <div class="mt-30">
 
@@ -13,7 +13,7 @@
         <input type="password" placeholder="비밀번호" name="password" title="비밀번호 입력" tabindex="2" v-model="password">
         <!-- <div class="error-msg"><span>{{emailErrorMessage}}</span></div> -->
       </div>
-            
+
       <label v-cloak check class="mt-10">
         <input type="checkbox" title="아이디 저장" tabindex="3" v-model="isCheckedSaveId">
         아이디 저장<i></i>
@@ -24,7 +24,7 @@
         <nuxt-link :to="{ name: 'join' }" class="btn-join">회원가입</nuxt-link>
       </div>
     </div>
-    
+
   </section>
 </template>
 
@@ -47,8 +47,15 @@ export default {
     }
   },
   methods: {
-    login () {
-      console.log('login!')
+    async login () {
+      try {
+        const result = await axios.post('/api/login', {
+          email: this.username,
+          password: this.password,
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 }
@@ -67,6 +74,6 @@ export default {
     }
   }
 
-  
+
 }
 </style>

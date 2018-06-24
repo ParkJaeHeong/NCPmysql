@@ -97,9 +97,13 @@
         </template>
 
         <div class="text-center mt-40">
-          <template v-if="stepNum !== 3">
+          <template v-if="stepNum === 1">
             <button type="button" class="btn-prev btn btn-lg btn-default" @click="stepNum--" v-if="stepNum !== 1">이전</button>
             <button type="button" class="btn-next btn btn-lg btn-primary" @click="stepNum++">다음</button>
+          </template>
+          <template v-else-if="stepNum === 2">
+            <button type="button" class="btn-prev btn btn-lg btn-default" @click="stepNum--" v-if="stepNum !== 1">이전</button>
+            <button type="button" class="btn-next btn btn-lg btn-primary" @click="join">다음</button>
           </template>
           <template v-else>
             <nuxt-link to="/" class="btn-next btn btn-lg btn-primary">확인</nuxt-link>
@@ -142,9 +146,20 @@ export default {
     }
   },
   methods: {
-    join () {
-      console.log('join!')
-    }
+    async join () {
+      try {
+        const result = await axios.post('/api/users', {
+          email: this.username,
+          password: this.password,
+          name: this.fullname,
+          phone: this.mobile,
+        });
+        console.log(result);
+        this.stepNum++;
+      } catch (error) {
+        console.error(error);
+      }
+    },
   }
 }
 </script>
