@@ -37,21 +37,21 @@
           <hr class="mv-30" style="border-color: #000;">
 
           <div class="form-group">
-            <label for="username" class="col-sm-3 control-label">아이디 <span class="small color-primary">(필수)</span></label>
+            <label class="col-sm-3 control-label">아이디 <span class="small color-primary">(필수)</span></label>
             <div class="col-sm-9">
               <input type="email" class="form-control" placeholder="이메일을 입력해 주세요" name="username" tabindex="1" v-model="username"/>
             </div>
           </div>
           
           <div class="form-group">
-            <label for="password" class="col-sm-3 control-label">비밀번호 <span class="small color-primary">(필수)</span></label>
+            <label class="col-sm-3 control-label">비밀번호 <span class="small color-primary">(필수)</span></label>
             <div class="col-sm-9">
               <input type="password" class="form-control" placeholder="비밀번호를 입력해 주세요" name="password" tabindex="2" v-model="password">
             </div>
           </div>
           
           <div class="form-group">
-            <label for="password2" class="col-sm-3 control-label">비밀번호 확인 <span class="small color-primary">(필수)</span></label>
+            <label class="col-sm-3 control-label">비밀번호 확인 <span class="small color-primary">(필수)</span></label>
             <div class="col-sm-9">
               <input type="password" class="form-control" placeholder="비밀번호를 한번 더 입력해 주세요" name="password2" tabindex="3">
               <p class="small color-gray-light mt-5">비밀번호는 8자 이상, 16자 이하의 영문자, 숫자 및 특수문자를 조합하여 사용해야 합니다</p>
@@ -64,14 +64,14 @@
           <hr class="mv-20" style="border-color: #000;">
 
           <div class="form-group">
-            <label for="username" class="col-sm-3 control-label">이름 <span class="small color-primary">(필수)</span></label>
+            <label class="col-sm-3 control-label">이름 <span class="small color-primary">(필수)</span></label>
             <div class="col-sm-9">
               <input type="text" class="form-control" placeholder="이름을 입력해 주세요" name="username" tabindex="4" v-model="fullname"/>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="username" class="col-sm-3 control-label">휴대폰 번호 <span class="small color-primary">(필수)</span></label>
+            <label class="col-sm-3 control-label">휴대폰 번호 <span class="small color-primary">(필수)</span></label>
             <div class="col-sm-9">
               <input type="text" class="form-control" placeholder="휴대폰 번호를 '-' 없이 입력해주세요" name="username" tabindex="5" v-model="mobile"/>
             </div>
@@ -113,7 +113,6 @@
 </template>
 
 <script>
-import axios from '~/plugins/axios'
 import policyService from '~/components/policy/service.vue'
 import policyPrivacy from '~/components/policy/privacy.vue'
 
@@ -121,10 +120,6 @@ export default {
   components: {
     policyService,
     policyPrivacy
-  },
-  async asyncData () {
-    let { data } = await axios.get('/api/users')
-    return { users: data }
   },
   data () {
     return {

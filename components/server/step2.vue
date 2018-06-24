@@ -79,15 +79,15 @@
       <div class="form-group">
         <label class="col-sm-3 control-label">서버 개수</label>
         <div class="col-sm-9 input-wrap">
-          <input type="text" placeholder="최대 10개" v-model="inputData.serverNum">
+          <input type="text" name="serverNum" :class="{ 'err': errors.has('serverNum') }" placeholder="최대 8개" v-model="inputData.serverNum" v-validate="'required|numeric|max_value:8'">
         </div>
       </div>
 
       <div class="form-group">
         <label class="col-sm-3 control-label">서버 이름</label>
         <div class="col-sm-9 input-wrap">
-          <input type="text" placeholder="최소 3글자, 최대 30자" v-model="inputData.serverName">
-          <label check class="md-check mt-10"><input type="checkbox"><i class="blue"></i>입력하신 서버 이름으로 hostname을 설정합니다.</label>
+          <input type="text" name="serverName" :class="{ 'err': errors.has('serverName') }" placeholder="최소 3글자, 최대 30자" v-model="inputData.serverName" v-validate="'required|alpha|min:3|max:30'">
+          <!--<label check class="md-check mt-10"><input type="checkbox"><i class="blue"></i>입력하신 서버 이름으로 hostname을 설정합니다.</label>-->
         </div>
       </div>
 
@@ -111,7 +111,12 @@
       </div>
 
     </div>
-    <hr class="mt-30">
+    <hr class="mv-40">
+
+    <div class="text-center">
+      <button type="button" class="btn-prev btn btn-lg btn-default" @click="prevFunc">이전</button>
+      <button type="button" class="btn-next btn btn-lg btn-primary" @click="validateBeforeSubmit(nextFunc)">다음</button>
+    </div>
 
   </section>
 </template>
@@ -129,6 +134,9 @@
         type: Object
       },
       nextFunc: {
+        type: Function
+      },
+      prevFunc: {
         type: Function
       }
     },
@@ -173,6 +181,15 @@
       }
     },
     methods: {
+      validateBeforeSubmit (func) {
+        this.$validator.validateAll().then((result) => {
+          if (result) {
+            // success process
+            func()
+          }
+          // fail process
+        })
+      },
       setServerImage (item) {
         this.inputData.name = item.title
         this.inputData.description = item.description
@@ -180,7 +197,15 @@
       },
       setType (title) {
         this.inputData.type = title
-        this.inputData.typeName = '선택해주세요'
+        if (title === 'Standard') {
+          this.inputData.typeName = '[Standard] vCPU 2개, 메모리 4GB, [SSD]디스크 50GB'
+        } else if (title === 'High Memory') {
+          this.inputData.typeName = '[High-Memory] vCPU 8개, 메모리 64GB, [SSD]디스크 50GB'
+        } else if (title === 'VDS') {
+          this.inputData.typeName = '[VDS] vCPU 20개, 메모리 80GB, [SSD]디스크 1000GB (기본50GB/추가950GB)'
+        } else {
+          this.inputData.typeName = '[Compact] vCPU 1개, 메모리 2GB, [SSD]디스크 50GB'
+        }
       },
       checkType (item) {
         if (this.inputData.type === '전체') return true

@@ -42,7 +42,12 @@
       </section>
 
     </div>
-    <hr class="mt-30">
+    <hr class="mv-40">
+
+    <div class="text-center">
+      <button type="button" class="btn-prev btn btn-lg btn-default" @click="prevFunc">이전</button>
+      <button type="button" class="btn-next btn btn-lg btn-primary" @click="nextFunc" :disabled="inputData.name === '선택해주세요'">다음</button>
+    </div>
 
   </section>
 </template>
@@ -61,6 +66,9 @@
         type: Object
       },
       nextFunc: {
+        type: Function
+      },
+      prevFunc: {
         type: Function
       }
     },

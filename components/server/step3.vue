@@ -31,9 +31,10 @@
           <label class="col-sm-2 control-label">인증키 이름</label>
           <div class="col-sm-8 input-wrap">
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="최소 3글자, 최대 30자" v-model="inputData.addName">
+              <input type="text" class="form-control" placeholder="최소 3글자, 최대 30자" v-model="inputData.addName" v-validate="'required|min:3|max:30'">
               <span class="input-group-btn">
-                <btn type="default" @click="addAuthentication(inputData.addName)">인증키 생성 및 저장</btn>
+                <button type="button" class="btn btn-default" @click="addAuthentication(inputData.addName)" :disabled="inputData.addName === ''">인증키 생성 및 저장</button>
+                <!--<btn type="default" @click="addAuthentication(inputData.addName)">인증키 생성 및 저장</btn>-->
               </span>
             </div>
             <p class="color-gray-light mt-20">인증키 이름을 입력 후 <span class="color-gray-darker">[인증키 생성 및 저장]</span>를 클릭하여 인증키를 사용자 컴퓨터에 저장하세요.<br>
@@ -43,7 +44,12 @@
       </section>
 
     </div>
-    <hr class="mt-30">
+    <hr class="mv-40">
+
+    <div class="text-center">
+      <button type="button" class="btn-prev btn btn-lg btn-default" @click="prevFunc">이전</button>
+      <button type="button" class="btn-next btn btn-lg btn-primary" @click="nextFunc" :disabled="inputData.name === '선택해주세요'">다음</button>
+    </div>
 
   </section>
 </template>
@@ -61,6 +67,9 @@
         type: Object
       },
       nextFunc: {
+        type: Function
+      },
+      prevFunc: {
         type: Function
       }
     },

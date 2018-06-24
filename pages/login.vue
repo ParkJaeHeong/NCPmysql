@@ -29,14 +29,8 @@
 </template>
 
 <script>
-import axios from '~/plugins/axios'
-
 export default {
   layout: 'panel',
-  async asyncData () {
-    let { data } = await axios.get('/api/users')
-    return { users: data }
-  },
   data () {
     return {
       username: '',

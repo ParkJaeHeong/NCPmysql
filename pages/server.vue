@@ -13,25 +13,13 @@
                   :stepActive="stepNum" />
       </div>
       <div class="col-sm-12 col-md-10 col-md-push-1">
-
         <step1 :inputData="inputData.serverImg" :nextFunc="goNext" v-if="stepNum === 1"/>
-        <step2 :inputData="inputData.server" :nextFunc="goNext" v-if="stepNum === 2"/>
-        <step3 :inputData="inputData.authentication" v-if="stepNum === 3"/>
-        <step4 :inputData="inputData.setUpAcg" v-if="stepNum === 4"/>
-        <step5 :data="inputData.server" v-if="stepNum === 5"/>
-        <step6 :data="inputData" v-if="stepNum === 6"/>
-
+        <step2 :inputData="inputData.server" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 2"/>
+        <step3 :inputData="inputData.authentication" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 3"/>
+        <step4 :inputData="inputData.setUpAcg" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 4"/>
+        <step5 :data="inputData.server" v-bind.sync="setting" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 5"/>
+        <step6 :data="inputData" :settingList="setting.p_settingList" :nextFunc="createServer" :prevFunc="goPrev" v-if="stepNum === 6"/>
       </div>
-    </div>
-
-    <div class="text-center mt-40">
-      <template v-if="stepNum !== 1">
-        <button type="button" class="btn-prev btn btn-lg btn-default" @click="stepNum--" v-if="stepNum !== 1">이전</button>
-        <button type="button" class="btn-next btn btn-lg btn-primary" @click="stepNum++" v-if="stepNum !== maxStepNum">다음</button>
-      </template>
-      <template v-if="stepNum === maxStepNum">
-        <nuxt-link to="/" class="btn-next btn btn-lg btn-primary">서버 생성</nuxt-link>
-      </template>
     </div>
 
   </section>
@@ -58,51 +46,66 @@
     },
     data () {
       return {
-        stepNum: 6,
+        stepNum: 1,
         maxStepNum: 6,
         inputData: {
           serverImg: {
-            name: 'centos-7.3-64', // null
-            description: 'CentOS 7.3 (64-bit)', // null
-            bootingDiskSize: 53687091200,
+            name: null,
+            description: null,
+            bootingDiskSize: '53687091200',
             osType: 'os',
             osDetailType: 'ALL',
             dbmsOsDetailType: 'ALL'
           },
           server: {
+            zone: 'KR-2',
             storageType: 'SSD',
             FeeSystemType: 'FXSUM',
-            serverNum: 5,
-            serverName: 'abc',
+            serverNum: 1,
+            serverName: null,
             returnProtection: 'TRUE',
-            zone: 'KR-2',
             type: '전체',
-            typeName: '선택해주세요'
+            typeName: '[Compact] vCPU 1개, 메모리 2GB, [SSD]디스크 50GB',
+            template: '템플릿 선택'
           },
           authentication: {
             authentication: 'sel',
             name: '선택해주세요',
-            addName: null,
+            addName: '',
             list: []
           },
           setUpAcg: {
             type: 'sel',
             name: '선택해주세요'
           }
+        },
+        setting: {
+          p_serverList: [],
+          p_serverStructure: [],
+          p_settingList: []
         }
       }
     },
     methods: {
       goNext () {
         this.stepNum++
+      },
+      goPrev () {
+        this.stepNum--
+      },
+      createServer () {
+        console.log('createServer')
       }
     }
   }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
   @import "~assets/less/bootstrap/variables.less";
 
+  input.err {
+    border: 1px solid @brand-danger;
+  }
   .btn-prev,
   .btn-next {
     font-size: 14px;
