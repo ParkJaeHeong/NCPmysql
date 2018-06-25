@@ -99,10 +99,12 @@ export default {
       for (let i in arr) {
         if (arr[i].master === null) {
           temp += 'Master - '
+        } else if (arr[i].slave) {
+          temp += ', Dual - '
         } else {
           temp += ', Slave - '
         }
-        temp += `${this.data.server.serverName}00${arr[i].id} `
+        temp += `${this.data.server.serverName}00${arr[i].id}`
       }
       return temp
     }
