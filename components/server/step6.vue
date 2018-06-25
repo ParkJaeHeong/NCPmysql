@@ -5,15 +5,15 @@
     <p class="mt-10 color-gray">[서버 생성] 버튼을 클릭하면 서버가 생성됩니다.</p>
     <hr class="mv-30" style="border-color: #000;">
 
-    <h6>서버 이미지</h6>
-    <div class="card p-20 mt-15">
-      <ul class="list-unstyle row">
-        <li class="col-xs-4 col-sm-2">서버 이미지 이름</li>
-        <li class="col-xs-8 col-sm-4 color-gray-light">{{data.serverImg.name}}</li>
-        <li class="col-xs-4 col-sm-2">서버 이미지 설명</li>
-        <li class="col-xs-8 col-sm-4 color-gray-light">{{data.serverImg.description}}</li>
-      </ul>
-    </div>
+    <!--<h6>서버 이미지</h6>-->
+    <!--<div class="card p-20 mt-15">-->
+      <!--<ul class="list-unstyle row">-->
+        <!--<li class="col-xs-4 col-sm-2">서버 이미지 이름</li>-->
+        <!--<li class="col-xs-8 col-sm-4 color-gray-light">{{data.serverImg.name}}</li>-->
+        <!--<li class="col-xs-4 col-sm-2">서버 이미지 설명</li>-->
+        <!--<li class="col-xs-8 col-sm-4 color-gray-light">{{data.serverImg.description}}</li>-->
+      <!--</ul>-->
+    <!--</div>-->
 
     <h6 class="mt-40">서버</h6>
     <div class="card p-20 mt-15">
@@ -33,21 +33,21 @@
       </ul>
     </div>
 
-    <h6 class="mt-40">인증키</h6>
-    <div class="card p-20 mt-15">
-      <ul class="list-unstyle row">
-        <li class="col-xs-4 col-sm-2">인증키 이름</li>
-        <li class="col-xs-8 col-sm-4 color-gray-light">{{data.authentication.name}}</li>
-      </ul>
-    </div>
+    <!--<h6 class="mt-40">인증키</h6>-->
+    <!--<div class="card p-20 mt-15">-->
+      <!--<ul class="list-unstyle row">-->
+        <!--<li class="col-xs-4 col-sm-2">인증키 이름</li>-->
+        <!--<li class="col-xs-8 col-sm-4 color-gray-light">{{data.authentication.name}}</li>-->
+      <!--</ul>-->
+    <!--</div>-->
 
-    <h6 class="mt-40">Access Control Group</h6>
-    <div class="card p-20 mt-15">
-      <ul class="list-unstyle row">
-        <li class="col-xs-4 col-sm-2">ACG 이름</li>
-        <li class="col-xs-8 col-sm-4 color-gray-light">{{data.setUpAcg.name}}</li>
-      </ul>
-    </div>
+    <!--<h6 class="mt-40">Access Control Group</h6>-->
+    <!--<div class="card p-20 mt-15">-->
+      <!--<ul class="list-unstyle row">-->
+        <!--<li class="col-xs-4 col-sm-2">ACG 이름</li>-->
+        <!--<li class="col-xs-8 col-sm-4 color-gray-light">{{data.setUpAcg.name}}</li>-->
+      <!--</ul>-->
+    <!--</div>-->
 
     <h6 class="mt-40">복제 환경 설정</h6>
     <div class="card p-20 mt-15">

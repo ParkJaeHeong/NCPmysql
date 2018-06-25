@@ -9,16 +9,19 @@
     <div class="row">
       <div class="col-sm-8 col-sm-push-2">
         <StepMark class="mb-md"
-                  :titles="['서버 이미지 선택', '서버 설정', '인증키 설정', '네트워크 접근 설정', '복제 환경 설정', '최종 확인']"
+                  :titles="['서버 설정', '복제 환경 설정', '최종 확인']"
                   :stepActive="stepNum" />
+        <!--<StepMark class="mb-md"-->
+                  <!--:titles="['서버 이미지 선택', '서버 설정', '인증키 설정', '네트워크 접근 설정', '복제 환경 설정', '최종 확인']"-->
+                  <!--:stepActive="stepNum" />-->
       </div>
       <div class="col-sm-12 col-md-10 col-md-push-1">
-        <step1 :inputData="inputData.serverImg" :nextFunc="goNext" v-if="stepNum === 1"/>
-        <step2 :inputData="inputData.server" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 2"/>
-        <step3 :inputData="inputData.authentication" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 3"/>
-        <step4 :inputData="inputData.setUpAcg" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 4"/>
-        <step5 :data="inputData.server" v-bind.sync="setting" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 5"/>
-        <step6 :data="inputData" :settingList="setting.p_settingList" :nextFunc="createServer" :prevFunc="goPrev" v-if="stepNum === 6"/>
+        <!--<step1 :inputData="inputData.serverImg" :nextFunc="goNext" v-if="stepNum === 1"/>-->
+        <step2 :inputData="inputData.server" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 1"/>
+        <!--<step3 :inputData="inputData.authentication" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 3"/>-->
+        <!--<step4 :inputData="inputData.setUpAcg" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 4"/>-->
+        <step5 :data="inputData.server" v-bind.sync="setting" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 2"/>
+        <step6 :data="inputData" :settingList="setting.p_settingList" :nextFunc="createServer" :prevFunc="goPrev" v-if="stepNum === 3"/>
       </div>
     </div>
 
@@ -97,6 +100,18 @@
       },
       createServer () {
         console.log('createServer')
+        let temp = {
+          setting: this.setting.p_settingList,
+          dbUser: {
+            id: this.inputData.server.cloneId,
+            pw: this.inputData.server.clonePw
+          }
+        }
+        this.axios.post('/api/routes/server', temp).then((resp) => {
+          console.log(resp)
+        }).catch((err) => {
+          console.log(err)
+        })
       }
     }
   }
