@@ -49,8 +49,8 @@
     },
     data () {
       return {
-        stepNum: 1,
-        maxStepNum: 6,
+        stepNum: 2,
+        maxStepNum: 3,
         inputData: {
           serverImg: {
             name: null,
@@ -64,10 +64,10 @@
             zone: 'KR-2',
             storageType: 'SSD',
             FeeSystemType: 'FXSUM',
-            serverNum: 1,
-            serverName: null,
-            cloneId: null,
-            clonePw: null,
+            serverNum: 5,
+            serverName: 'asd',
+            cloneId: 'asd',
+            clonePw: 'asd',
             returnProtection: 'TRUE',
             type: '전체',
             typeName: '[Compact] vCPU 1개, 메모리 2GB, [SSD]디스크 50GB',

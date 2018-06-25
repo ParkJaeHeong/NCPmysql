@@ -10,19 +10,19 @@
         <dropdown ref="dropdown">
           <btn type="default" class="dropdown-toggle">{{ data.template }}<span class="caret ml-10"></span></btn>
           <template slot="dropdown">
-            <li class="dropdown-item" v-for="item in serverTemplate" @click="setTemplate(item)" v-if="item.serverNum <= data.serverNum"><a>{{item.title}}</a></li>
+            <li class="dropdown-item" v-for="(item, index) in serverTemplate" :key="index" @click="setTemplate(item)" v-if="item.serverNum <= data.serverNum"><a>{{item.title}}</a></li>
           </template>
         </dropdown>
         <button type="button" @click="addServer" class="btn btn-primary ml-10">서버 추가</button>
         <button type="button" @click="deleteServer" class="btn btn-default ml-10">서버 삭제</button>
         <button type="button" @click="resetServer" class="btn btn-gray ml-10">복제 환경 초기화</button>
-        <!--<button type="button" @click="setSettingList(serverStructure[0], null)" class="btn btn-primary ml-10">셋팅 리스트 만들기!</button>-->
+        <button type="button" @click="setSettingList(serverStructure[0], null)" class="btn btn-primary ml-10">셋팅 리스트 만들기!</button>
       </div>
 
       <div class="col-sm-4">
         <div class="card p-20">
           <draggable v-model="serverList" class="dragArea" :options="{group:'server'}">
-            <div v-for="(item, index) in serverList" :key="index" class="m-10">
+            <div v-for="(item, index) in serverList" :key="index">
               <item :title="item.title" :isDeleteBtn="false"/>
             </div>
           </draggable>
@@ -34,26 +34,22 @@
 
       <div class="col-sm-8">
         <div class="card p-20">
-          <draggable v-model="serverStructure" class="dragArea" :options="{group:'server'}">
-            <Tree draggable
-                  v-model="serverStructure"
-                  :template="template"/>
-          </draggable>
+          <Tree :treeData.sync="serverStructure" />
         </div>
       </div>
 
-      <!--<div class="col-xs-12 mt-20">-->
-        <!--serverList:-->
-        <!--{{serverList}}-->
-      <!--</div>-->
-      <!--<div class="col-xs-12 mt-20">-->
-        <!--serverStructure:-->
-        <!--{{serverStructure}}-->
-      <!--</div>-->
-      <!--<div class="col-xs-12 mt-20">-->
-        <!--settingList:-->
-        <!--{{settingList}}-->
-      <!--</div>-->
+      <div class="col-xs-12 mt-20">
+        serverList:
+        {{serverList}}
+      </div>
+      <div class="col-xs-12 mt-20">
+        serverStructure:
+        {{serverStructure}}
+      </div>
+      <div class="col-xs-12 mt-20">
+        settingList:
+        {{settingList}}
+      </div>
     </div>
     <hr class="mv-40">
 
@@ -73,8 +69,8 @@
 </template>
 
 <script>
-  import Item from '~/components/TreeItem.vue'
-  import Tree from 'vue-draggable-tree'
+  import Item from '~/components/Tree/item.vue'
+  import Tree from '~/components/Tree'
   import draggable from 'vuedraggable'
   import {Dropdown, Btn, Modal} from 'uiv'
 
@@ -113,14 +109,16 @@
         lastNum: this.data.serverNum,
         initList: [{
           key: '1',
-          title: `${this.data.serverName}001`
+          title: `${this.data.serverName}001`,
+          children: []
         }],
         serverList: this.p_serverList,
         serverStructure: this.p_serverStructure,
         settingList: this.p_settingList,
         newServerStructure: [{
           key: '1',
-          title: `${this.data.serverName}001`
+          title: `${this.data.serverName}001`,
+          children: []
         }],
         serverTemplate: [
           { id: 1, serverNum: 2, title: '2대, M-S' },
@@ -152,7 +150,8 @@
         for (let i = startNum; i <= this.data.serverNum; i++) {
           let tempObject = {
             key: i,
-            title: `${this.data.serverName}00${i}`
+            title: `${this.data.serverName}00${i}`,
+            children: []
           }
           this.serverList.push(tempObject)
         }
@@ -246,6 +245,17 @@
 </script>
 
 <style lang="less">
+  .dragArea {
+    min-height: 10px;
+    background-color: pink;
+    .dragArea {
+      margin-left: 30px;
+      background-color: skyblue;
+      .dragArea {
+        background-color: yellow;
+      }
+    }
+  }
   .ant-tree li .ivu-tree-children {
     padding-left: 40px !important;
   }
