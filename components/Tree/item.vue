@@ -3,7 +3,7 @@
     <ul class="list-unstyled list-item p-0">
       <li><img src="/img/server.gif" alt="" class="img-server"></li>
       <li class="title">{{title}}</li>
-      <li><button type="button" class="btn-delete" v-if="isDeleteBtn"><i class="glyphicon glyphicon-remove"></i></button></li>
+      <li><button type="button" @click="delFunc" class="btn-delete" v-if="isDeleteBtn"><i class="glyphicon glyphicon-remove"></i></button></li>
     </ul>
   </section>
 </template>
@@ -18,9 +18,12 @@
       isDeleteBtn: {
         type: Boolean,
         default: true
+      },
+      delFunc: {
+        type: Function,
+        default: () => {}
       }
-    },
-    methods: {}
+    }
   }
 </script>
 

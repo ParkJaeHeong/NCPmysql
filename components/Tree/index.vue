@@ -24,7 +24,12 @@ export default {
   },
   data () {
     return {
-      treeList: this.treeData
+      // treeList: this.treeData
+    }
+  },
+  computed: {
+    treeList: function () {
+      return this.treeData
     }
   }
 }
