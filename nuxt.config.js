@@ -59,6 +59,10 @@ module.exports = {
       }
     }
   },
+  serverMiddleware: [
+    // API middleware
+    '~/api/index.js'
+  ],
   plugins: [
     {src: '~/plugins/vee-validate.js'},
     {src: '~/plugins/vue-authenticate.js', ssr: false}

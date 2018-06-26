@@ -107,7 +107,7 @@
             pw: this.inputData.server.clonePw
           }
         }
-        this.axios.post('/api/routes/server', temp).then((resp) => {
+        this.axios.post('/api/server', temp).then((resp) => {
           console.log(resp)
         }).catch((err) => {
           console.log(err)
