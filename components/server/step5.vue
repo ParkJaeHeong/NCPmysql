@@ -165,7 +165,7 @@
       }
     },
     created () {
-      // this.resetServer()
+      this.resetServer()
     },
     methods: {
       beforeSubmit (Func, flag) {
