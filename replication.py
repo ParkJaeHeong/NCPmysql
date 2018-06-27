@@ -1,157 +1,159 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 import json
 import sys
 import paramiko
 import time
 
-serverlist = ["106.10.42.67", "106.10.42.44", "106.10.42.151", "106.10.42.158", "106.10.42.161"]
+serverlist = ["106.10.42.44", "106.10.42.67", "106.10.42.151", "106.10.42.158", "106.10.42.161"]
 
 data = json.loads(sys.argv[1])
+repl = json.loads(sys.argv[2])
+
+print(data)
+print(repl)
 
 # 입력받은 개수 만큼 서버 할당
 for i in range(0, len(data)) :
     data[i]["ip"] = ''+serverlist[i]+''
 
-master_id = []
-master_ip = []
-dual_id = []
-dual_ip = []
-slave_id = []
-slave_ip = []
+# repl 계정 생성
+def set_repl(id, pw):
+    for i in range(0, len(data)) :
 
-# 복제 환경 분류
-for i in range(0, len(data)) :
-    if data[i].get("master") == "null" :
-        master_id.append(data[i]["id"])
-        master_ip.append(data[i]["ip"])
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
 
-    elif "slave" in data[i] :
-        dual_id.append(data[i]["id"])
-        dual_ip.append(data[i]["ip"])
+        try:
+            client.connect(''+data[i]["ip"]+'', 22, 'root')
+        except:
+                print("서버에 접속할 수 없습니다")
 
-    else :
-        slave_id.append(data[i]["id"])
-        slave_ip.append(data[i]["ip"])
+        client.exec_command('mysql -e \"Grant replication slave on *.* to \''+id+'\'@\'%\' identified by \''+pw+'\'\"')
 
-print(data)
+# master, dual, slave의 my.cnf 파일 수정
+def set_mycnf(data) :
+    for i in range(0, len(data)) :
 
-# master의 my.cnf 파일 수정, repl 계정 생성
-for i in range(0, len(master_ip)) :
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+                client.connect('' +data[i]["ip"]+ '', 22, 'root')
+        except:
+                print("서버에 접속할 수 없습니다")
+                sys.exit()
 
-    try:
-            client.connect('' +master_ip[i]+ '', 22, 'root')
-    except:
-            print("서버에 접속할 수 없습니다")
-            sys.exit()
+        if (data[i]["master"]=="Null") :
+            cmd_list_master = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo log-bin = mysql-bin >> /etc/my.cnf']
+            req_master = ';'.join(cmd_list_master)
+            client.exec_command(req_master)
+            client.exec_command('systemctl restart mysqld')
+            client.close()
 
-    cmd_list_master = ['echo server-id = '+master_id[i]+' >> /etc/my.cnf', 'echo log-bin = mysql-bin >> /etc/my.cnf', 'mysql -e \"Grant replication slave on *.* to \'repl\'@\'%\' identified by \'Ahstmxj@4\'\"', 'systemctl restart mysqld']
-    req_master = ';'.join(cmd_list_master)
-    client.exec_command(req_master)
-    time.sleep(3)
+        elif('slave' in data[i]) :
+            cmd_list_dual = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo log-bin = mysql-bin >> /etc/my.cnf', 'echo log-slave-updates >> /etc/my.cnf']
+            req_dual = ';'.join(cmd_list_dual)
+            client.exec_command(req_dual)
+            client.exec_command('systemctl restart mysqld')
+            client.close()
 
-# slave의 my.cnf 파일 수정, repl 계정 생성
-for i in range(0, len(slave_ip)) :
-
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-    try:
-            client.connect('' +slave_ip[i]+ '', 22, 'root')
-    except:
-            print("서버에 접속할 수 없습니다")
-            sys.exit()
-
-    cmd_list_slave = ['echo server-id = '+slave_id[i]+' >> /etc/my.cnf','mysql -e \"Grant replication slave on *.* to \'repl\'@\'%\' identified by \'Ahstmxj@4\'\"', 'systemctl restart mysqld']
-    req_slave = ';'.join(cmd_list_slave)
-    client.exec_command(req_slave)
-    time.sleep(3)
-
-for i in range(0, len(dual_ip)) :
-
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-    try:
-            client.connect('' +dual_ip[i]+ '', 22, 'root')
-    except:
-            print("서버에 접속할 수 없습니다")
-            sys.exit()
-
-    cmd_list_dual = ['echo server-id = '+dual_id[i]+' >> /etc/my.cnf', 'echo log-bin = mysql-bin >> /etc/my.cnf', 'echo log-slave-updates >> /etc/my.cnf','mysql -e \"Grant replication slave on *.* to \'repl\'@\'%\' identified by \'Ahstmxj@4\'\"', 'systemctl restart mysqld']
-    req_dual = ';'.join(cmd_list_dual)
-    client.exec_command(req_dual)
-    time.sleep(3)
-
-time.sleep(3)
+        else :
+            cmd_list_slave = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf']
+            req_slave = ';'.join(cmd_list_slave)
+            client.exec_command(req_slave)
+            client.exec_command('systemctl restart mysqld')
+            client.close()
 
 # master DB에서 binlog 값과  position 알아내기
+def get_masterinfo(data) :
+    for i in range(0, len(data)) :
+         if data[i].get("master") == 'Null' or 'slave' in data[i] :
 
-for i in range(0, len(data)) :
-     if data[i].get("master") == 'null' or 'slave' in data[i] :
+             client = paramiko.SSHClient()
+             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-         client = paramiko.SSHClient()
-         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+             try:
+                 client.connect('' + data[i]["ip"] + '', 22, 'root')
+             except:
+                 print("서버에 접속할 수 없습니다")
+                 sys.exit()
 
-         try:
-             client.connect('' + data[i]["ip"] + '', 22, 'root')
-         except:
-             print("서버에 접속할 수 없습니다")
-             sys.exit()
+             cmd_list_master = ['mysql -e \"show master status\"']
+             req_master = ''.join(cmd_list_master)
+             stdin, stdout, stderr = client.exec_command(req_master)
 
-         cmd_list_master = ['mysql -e \"show master status\"']
-         req_master = ''.join(cmd_list_master)
-         stdin, stdout, stderr = client.exec_command(req_master)
+             output = stdout.read()
+             print(output)
+             result1 = output.decode('ascii')
+             result2 = str(result1)
+             parser = result2.replace('\n', '\t')
+             list = parser.split('\t')
 
-         output = stdout.read()
-         print(output)
-         result1 = output.decode('ascii')
-         result2 = str(result1)
-         parser = result2.replace('\n', '\t')
-         list = parser.split('\t')
+             data[i]["file"]=''+list[5]+''
+             data[i]["pos"]=''+list[6]+''
+             client.close()
 
-         data[i]["file"]=''+list[5]+''
-         data[i]["pos"]=''+list[6]+''
+    return(data)
 
-# slave command 설정
+def set_slave(result) :
+    for i in range(0, len(result)) :
+        if result[i].get("master") is not "Null" :
+            target = result[i]["master"]
+            for k in range(0, len(data)) :
+                if result[k]["id"] == target :
+                    filename = result[k]["file"]
+                    pos = result[k]["pos"]
+                    ip = result[k]["ip"]
 
-for i in range(0, len(data)) :
-    if data[i].get("master") is not "null" :
-        target = data[i]["master"]
-        for k in range(0, len(data)) :
-            if data[k]["id"] == target :
-                filename = data[k]["file"]
-                pos = data[k]["pos"]
-                ip = data[k]["ip"]
+                    client = paramiko.SSHClient()
+                    client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
 
-                try:
-                    client.connect('' + data[i]["ip"] + '', 22, 'root')
-                except:
-                    print("서버에 접속할 수 없습니다")
-                    sys.exit()
+                    try:
+                        client.connect('' + result[i]["ip"] + '', 22, 'root')
+                    except:
+                        print("서버에 접속할 수 없습니다")
+                        sys.exit()
 
-                cmd_list_master = ['mysql -e \"change master to ', 'master_host = \'' +ip+ '\',', 'master_port = 3306,', 'master_user = \'repl\',',
-                                   'master_password =\'Ahstmxj@4\',', 'master_log_file= \'' +filename+ '\',', 'master_log_pos = ' +pos+ '\"']
-                req_master = ''.join(cmd_list_master)
-                stdin, stdout, stderr = client.exec_command(req_master)
-
+                    cmd_list_master = ['mysql -e \"change master to ', 'master_host = \'' +ip+ '\',', 'master_port = 3306,', 'master_user = \'' +repl["id"]+ '\',',
+                                       'master_password = \'' +repl["pw"]+ '\',', 'master_log_file= \'' +filename+ '\',', 'master_log_pos = ' +pos+ '\"']
+                    req_master = ''.join(cmd_list_master)
+                    stdin, stdout, stderr = client.exec_command(req_master)
+                    client.close()
 
 # slave start
-for i in range(0, len(data)) :
-    if data[i].get("master") is not "null" :
+def start_slave(result) :
+    for i in range(0, len(result)) :
+        if data[i].get("master") is not "Null" :
 
-                client = paramiko.SSHClient()
-                client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-                try:
-                    client.connect('' + data[i]["ip"] + '', 22, 'root')
-                except:
-                    print("서버에 접속할 수 없습니다")
-                    sys.exit()
+            try:
+                client.connect('' + result[i]["ip"] + '', 22, 'root')
+            except:
+                print("서버에 접속할 수 없습니다")
+                sys.exit()
 
-                cmd_list_master = ['mysql -e \"start slave\"']
-                req_master = ''.join(cmd_list_master)
-                stdin, stdout, stderr = client.exec_command(req_master)
+            client.exec_command('rm -rf /var/lib/mysql/auto.cnf')
+            client.exec_command('systemctl restart mysqld')
+            cmd_list_master = ['mysql -e \"start slave\"']
+            req_master = ''.join(cmd_list_master)
+            stdin, stdout, stderr = client.exec_command(req_master)
+
+            client.close()
+
+set_repl(repl["id"],repl["pw"])
+
+set_mycnf(data)
+
+time.sleep(4)
+
+result = get_masterinfo(data)
+
+print(result)
+
+set_slave(result)
+
+start_slave(result)

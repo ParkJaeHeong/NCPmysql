@@ -97,7 +97,7 @@ export default {
       let temp = ''
       let arr = this.settingList
       for (let i in arr) {
-        if (arr[i].master === null) {
+        if (arr[i].master === 'Null') {
           temp += 'Master - '
         } else if (arr[i].slave) {
           temp += ', Dual - '
@@ -111,4 +111,3 @@ export default {
   }
 }
 </script>
-

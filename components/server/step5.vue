@@ -215,20 +215,20 @@
         let tempObject = null
         if (masterId === null) {
           tempObject = {
-            id: item.key,
-            master: masterId
+            id: `${item.key}`,
+            master: 'Null'
           }
         } else {
           if (this.setArrayChildren(item.children)[0]) {
             tempObject = {
-              id: item.key,
-              master: masterId,
+              id: `${item.key}`,
+              master: `${masterId}`,
               slave: this.setArrayChildren(item.children)
             }
           } else {
             tempObject = {
-              id: item.key,
-              master: masterId
+              id: `${item.key}`,
+              master: `${masterId}`
             }
           }
         }
@@ -237,7 +237,7 @@
       setArrayChildren (arr) {
         let result = []
         for (let i in arr) {
-          result.push(Number(arr[i].key))
+          result.push(`${arr[i].key}`)
         }
         return result
       }
