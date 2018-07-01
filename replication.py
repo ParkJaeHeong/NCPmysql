@@ -11,6 +11,7 @@ serverlist = ["106.10.42.44", "106.10.42.67", "106.10.42.151", "106.10.42.158", 
 
 data = json.loads(sys.argv[1])
 repl = json.loads(sys.argv[2])
+host = json.loads(sys.argv[3])
 
 result_master = []
 result_slave = []
@@ -32,11 +33,10 @@ def set_repl(id, pw):
                 print("서버에 접속할 수 없습니다")
                 sys.exit(1)
 
-
         client.exec_command('mysql -e \"Grant replication slave on *.* to \''+id+'\'@\'%\' identified by \''+pw+'\'\"')
 
 # master, dual, slave의 my.cnf 파일 수정
-def set_mycnf(data) :
+def set_mycnf(data, host) :
     for i in range(0, len(data)) :
 
         client = paramiko.SSHClient()
@@ -56,14 +56,14 @@ def set_mycnf(data) :
             client.close()
 
         elif('slave' in data[i]) :
-            cmd_list_dual = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo log-bin = mysql-bin >> /etc/my.cnf', 'echo log-slave-updates >> /etc/my.cnf', 'echo report-host = nbp00' +data[i]["id"]+ ' >> /etc/my.cnf']
+            cmd_list_dual = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo log-bin = mysql-bin >> /etc/my.cnf', 'echo log-slave-updates >> /etc/my.cnf', 'echo report-host = '+host+'00'+data[i]["id"]+' >> /etc/my.cnf']
             req_dual = ';'.join(cmd_list_dual)
             client.exec_command(req_dual)
             client.exec_command('systemctl restart mysqld')
             client.close()
 
         else :
-            cmd_list_slave = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo report-host = nbp00' +data[i]["id"]+ ' >> /etc/my.cnf']
+            cmd_list_slave = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo report-host = '+host+'00'+data[i]["id"]+' >> /etc/my.cnf']
             req_slave = ';'.join(cmd_list_slave)
             client.exec_command(req_slave)
             client.exec_command('systemctl restart mysqld')
