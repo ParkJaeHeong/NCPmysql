@@ -114,7 +114,8 @@
           dbUser: {
             id: this.inputData.server.cloneId,
             pw: this.inputData.server.clonePw
-          }
+          },
+          host: this.inputData.server.serverName
         }
         this.axios.post('/api/routes/server', temp).then((resp) => {
           console.log('resp: ', resp)

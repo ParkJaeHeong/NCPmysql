@@ -55,7 +55,7 @@
     <div class="card p-20 mt-15">
       <ul class="list-unstyle row">
         <li class="col-xs-2">복제 환경 구성</li>
-        <li class="col-xs-10 color-gray-light">{{data.server.template}}</li>
+        <li class="col-xs-10 color-gray-light">{{data.server.serverNum > 4 ? '사용자 설정' : (data.server.template === '템플릿 선택' ? '사용자 설정' : data.server.template)}}</li>
         <li class="col-xs-2 pt-10">서버 구성</li>
         <li class="col-xs-10 pt-10 color-gray-light">{{getSettingStructure()}}</li>
       </ul>
