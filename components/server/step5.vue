@@ -10,20 +10,20 @@
         <dropdown ref="dropdown">
           <btn type="default" class="dropdown-toggle">{{ data.template }}<span class="caret ml-10"></span></btn>
           <template slot="dropdown">
-            <li class="dropdown-item" v-for="item in serverTemplate" @click="setTemplate(item)" v-if="item.serverNum <= data.serverNum"><a>{{item.title}}</a></li>
+            <li class="dropdown-item" v-for="(item, index) in serverTemplate" :key="index" @click="setTemplate(item)" v-if="item.serverNum <= data.serverNum"><a>{{item.title}}</a></li>
           </template>
         </dropdown>
         <button type="button" @click="addServer" class="btn btn-primary ml-10">서버 추가</button>
         <button type="button" @click="deleteServer" class="btn btn-default ml-10">서버 삭제</button>
         <button type="button" @click="resetServer" class="btn btn-gray ml-10">복제 환경 초기화</button>
-        <!--<button type="button" @click="setSettingList(serverStructure[0], null)" class="btn btn-primary ml-10">셋팅 리스트 만들기!</button>-->
+        <!-- <button type="button" @click="setSettingList(serverStructure[0], null)" class="btn btn-primary ml-10">셋팅 리스트 만들기!</button> -->
       </div>
 
       <div class="col-sm-4">
         <div class="card p-20">
           <draggable v-model="serverList" class="dragArea" :options="{group:'server'}">
             <div v-for="(item, index) in serverList" :key="index" class="m-10">
-              <item :title="item.title" :isDeleteBtn="false"/>
+              <item :title="item.title"/>
             </div>
           </draggable>
           <div v-if="serverList.length === 0">
@@ -42,18 +42,18 @@
         </div>
       </div>
 
-      <!--<div class="col-xs-12 mt-20">-->
-        <!--serverList:-->
-        <!--{{serverList}}-->
-      <!--</div>-->
-      <!--<div class="col-xs-12 mt-20">-->
-        <!--serverStructure:-->
-        <!--{{serverStructure}}-->
-      <!--</div>-->
-      <!--<div class="col-xs-12 mt-20">-->
-        <!--settingList:-->
-        <!--{{settingList}}-->
-      <!--</div>-->
+      <!-- <div class="col-xs-12 mt-20">
+        serverList:
+        {{serverList}}
+      </div>
+      <div class="col-xs-12 mt-20">
+        serverStructure:
+        {{serverStructure}}
+      </div>
+      <div class="col-xs-12 mt-20">
+        settingList:
+        {{settingList}}
+      </div> -->
     </div>
     <hr class="mv-40">
 
@@ -215,20 +215,20 @@
         let tempObject = null
         if (masterId === null) {
           tempObject = {
-            id: item.key,
-            master: masterId
+            id: `${item.key}`,
+            master: 'null'
           }
         } else {
           if (this.setArrayChildren(item.children)[0]) {
             tempObject = {
-              id: item.key,
-              master: masterId,
+              id: `${item.key}`,
+              master: `${masterId}`,
               slave: this.setArrayChildren(item.children)
             }
           } else {
             tempObject = {
-              id: item.key,
-              master: masterId
+              id: `${item.key}`,
+              master: `${masterId}`
             }
           }
         }
@@ -237,7 +237,7 @@
       setArrayChildren (arr) {
         let result = []
         for (let i in arr) {
-          result.push(Number(arr[i].key))
+          result.push(`${arr[i].key}`)
         }
         return result
       }

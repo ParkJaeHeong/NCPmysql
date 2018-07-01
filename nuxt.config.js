@@ -2,12 +2,6 @@ const webpack = require('webpack')
 
 module.exports = {
   /*
-  ** Router config
-  */
-  // router: {
-  //   middleware: [ 'check-auth' ]
-  // },
-  /*
   ** Headers of the page
   */
   head: {
@@ -60,7 +54,6 @@ module.exports = {
     }
   },
   plugins: [
-    {src: '~/plugins/vee-validate.js'},
-    {src: '~/plugins/vue-authenticate.js', ssr: false}
+    {src: '~/plugins/vee-validate.js'}
   ]
 }

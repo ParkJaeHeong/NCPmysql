@@ -15,7 +15,7 @@
       },
       isDeleteBtn: {
         type: Boolean,
-        default: true
+        default: false
       }
     },
     methods: {}

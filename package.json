@@ -22,6 +22,7 @@
     "url-template": "2.0.8",
     "vue-authenticate": "1.3.4",
     "vue-draggable-tree": "1.1.3",
+    "vue-spinner": "1.0.3",
     "vue-tree-halower": "1.5.4",
     "vuedraggable": "2.16.0"
   },
