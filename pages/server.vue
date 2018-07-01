@@ -50,7 +50,7 @@
     data () {
       return {
         stepNum: 1,
-        maxStepNum: 3,
+        maxStepNum: 6,
         inputData: {
           serverImg: {
             name: null,
@@ -89,6 +89,16 @@
           p_serverStructure: [],
           p_settingList: []
         }
+        // masterInfo: [
+        //   {'Server_id': '3', 'Host': 'nbp003', 'Slave_UUID': '2db51418-7adb-11e8-ae5d-f220cde1d013', 'Port': '3306', 'Master_id': '1'},
+        //   {'Server_id': '2', 'Host': 'nbp002', 'Slave_UUID': '2db93880-7adb-11e8-b9a1-f220cd40d0bb', 'Port': '3306', 'Master_id': '1'},
+        //   {'Server_id': '4', 'Host': 'nbp004', 'Slave_UUID': '2dd9904c-7adb-11e8-ae4b-f220cd19108a', 'Port': '3306', 'Master_id': '3'}
+        // ],
+        // slaveInfo: [
+        //   {'Slave_IO_Running': 'Yes', 'Seconds_Behind_Master': '0', 'Slave_SQL_Running': 'Yes', 'Slave_id': '2'},
+        //   {'Slave_IO_Running': 'Yes', 'Seconds_Behind_Master': '0', 'Slave_SQL_Running': 'Yes', 'Slave_id': '3'},
+        //   {'Slave_IO_Running': 'Yes', 'Seconds_Behind_Master': '0', 'Slave_SQL_Running': 'Yes', 'Slave_id': '4'}
+        // ]
       }
     },
     methods: {
@@ -99,16 +109,18 @@
         this.stepNum--
       },
       createServer () {
-        console.log('createServer')
         let temp = {
           setting: this.setting.p_settingList,
           dbUser: {
             id: this.inputData.server.cloneId,
             pw: this.inputData.server.clonePw
-          }
+          },
+          host: this.inputData.server.serverName
         }
-        this.axios.post('/api/server', temp).then((resp) => {
-          console.log(resp)
+        this.axios.post('/api/routes/server', temp).then((resp) => {
+          console.log('resp: ', resp)
+          // this.$store.commit('set_result', {masterInfo: this.masterInfo, slaveInfo: this.slaveInfo})
+          // this.$router.push('/result')
         }).catch((err) => {
           console.log(err)
         })
