@@ -5,14 +5,15 @@ import json
 import sys
 import paramiko
 import time
+import pymysql
 
 serverlist = ["106.10.42.44", "106.10.42.67", "106.10.42.151", "106.10.42.158", "106.10.42.161"]
 
 data = json.loads(sys.argv[1])
 repl = json.loads(sys.argv[2])
 
-print(data)
-print(repl)
+result_master = []
+result_slave = []
 
 # 입력받은 개수 만큼 서버 할당
 for i in range(0, len(data)) :
@@ -29,6 +30,8 @@ def set_repl(id, pw):
             client.connect(''+data[i]["ip"]+'', 22, 'root')
         except:
                 print("서버에 접속할 수 없습니다")
+                sys.exit(1)
+
 
         client.exec_command('mysql -e \"Grant replication slave on *.* to \''+id+'\'@\'%\' identified by \''+pw+'\'\"')
 
@@ -43,7 +46,7 @@ def set_mycnf(data) :
                 client.connect('' +data[i]["ip"]+ '', 22, 'root')
         except:
                 print("서버에 접속할 수 없습니다")
-                sys.exit()
+                sys.exit(1)
 
         if (data[i]["master"]=="Null") :
             cmd_list_master = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo log-bin = mysql-bin >> /etc/my.cnf']
@@ -53,14 +56,14 @@ def set_mycnf(data) :
             client.close()
 
         elif('slave' in data[i]) :
-            cmd_list_dual = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo log-bin = mysql-bin >> /etc/my.cnf', 'echo log-slave-updates >> /etc/my.cnf']
+            cmd_list_dual = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo log-bin = mysql-bin >> /etc/my.cnf', 'echo log-slave-updates >> /etc/my.cnf', 'echo report-host = nbp00' +data[i]["id"]+ ' >> /etc/my.cnf']
             req_dual = ';'.join(cmd_list_dual)
             client.exec_command(req_dual)
             client.exec_command('systemctl restart mysqld')
             client.close()
 
         else :
-            cmd_list_slave = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf']
+            cmd_list_slave = ['echo server-id = '+data[i]["id"]+' >> /etc/my.cnf', 'echo report-host = nbp00' +data[i]["id"]+ ' >> /etc/my.cnf']
             req_slave = ';'.join(cmd_list_slave)
             client.exec_command(req_slave)
             client.exec_command('systemctl restart mysqld')
@@ -78,7 +81,7 @@ def get_masterinfo(data) :
                  client.connect('' + data[i]["ip"] + '', 22, 'root')
              except:
                  print("서버에 접속할 수 없습니다")
-                 sys.exit()
+                 sys.exit(1)
 
              cmd_list_master = ['mysql -e \"show master status\"']
              req_master = ''.join(cmd_list_master)
@@ -114,7 +117,7 @@ def set_slave(result) :
                         client.connect('' + result[i]["ip"] + '', 22, 'root')
                     except:
                         print("서버에 접속할 수 없습니다")
-                        sys.exit()
+                        sys.exit(1)
 
                     cmd_list_master = ['mysql -e \"change master to ', 'master_host = \'' +ip+ '\',', 'master_port = 3306,', 'master_user = \'' +repl["id"]+ '\',',
                                        'master_password = \'' +repl["pw"]+ '\',', 'master_log_file= \'' +filename+ '\',', 'master_log_pos = ' +pos+ '\"']
@@ -134,7 +137,7 @@ def start_slave(result) :
                 client.connect('' + result[i]["ip"] + '', 22, 'root')
             except:
                 print("서버에 접속할 수 없습니다")
-                sys.exit()
+                sys.exit(1)
 
             client.exec_command('rm -rf /var/lib/mysql/auto.cnf')
             client.exec_command('systemctl restart mysqld')
@@ -144,6 +147,97 @@ def start_slave(result) :
 
             client.close()
 
+def result_replication(data) :
+
+    for i in range(0, len(data)):
+
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+
+        try:
+            client.connect('' + data[i]["ip"] + '', 22, 'root')
+        except:
+            print("서버에 접속할 수 없습니다")
+            sys.exit(1)
+
+
+        if (data[i]["master"] == "Null") :
+
+            cmd_list_showslavehosts = ['mysql -e \"show slave hosts\"']
+            req_showslavehosts = ''.join(cmd_list_showslavehosts)
+            stdin, stdout, stderr = client.exec_command(req_showslavehosts)
+            output = stdout.read()
+            output = ((output.decode('ascii')).replace('\n', '\t')).split('\t')
+            k = int(len(output)/5)
+
+            if (len(output) == 1 ) :
+                result_master.append({"Master_id": "" + data[i]["id"] + "", "Error": "복제 과정 중 오류가 발생했습니다"})
+            else :
+                for i in range(1, k) :
+                    result_master.append(dict(zip(output[:5:1], output[5*i:5*(i+1):1])))
+
+        elif ("slave" in data[i]) :
+
+            cmd_list_showslavehosts = ['mysql -e \"show slave hosts\"']
+            req_showslavehosts = ''.join(cmd_list_showslavehosts)
+            stdin, stdout, stderr = client.exec_command(req_showslavehosts)
+            output = stdout.read()
+            output = ((output.decode('utf-8')).replace('\n', '\t')).split('\t')
+            k = int(len(output) / 5)
+
+            if (len(output) == 1 ) :
+                result_master.append({"Master_id": "" + data[i]["id"] + "", "Error": "복제 과정 중 오류가 발생했습니다"})
+            else :
+                for t in range(1, k) :
+                    result_master.append(dict(zip(output[:5:1], output[5*t:5*(t+1):1])))
+
+            cmd_list_showslavestatus = ['mysql -e \"show slave status\"']
+            req_showslavestatus = ''.join(cmd_list_showslavestatus)
+            stdin, stdout, stderr = client.exec_command(req_showslavestatus)
+            output = stdout.read()
+            output = ((output.decode('utf-8')).replace('\n', '\t')).split('\t')
+
+            if (len(output) == 1):
+                result_slave.append({"Slave_id":""+data[i]["id"]+"","Error":"복제 과정 중 오류가 발생했습니다"})
+            else:
+                result_slave.append({"Slave_id":""+data[i]["id"]+"","Slave_IO_Running":""+output[67]+"", "Slave_SQL_Running":""+output[68]+"", "Seconds_Behind_Master":""+output[89]})
+
+        else :
+
+            cmd_list_showslavestatus = ['mysql -e \"show slave status\"']
+            req_showslavestatus = ''.join(cmd_list_showslavestatus)
+            stdin, stdout, stderr = client.exec_command(req_showslavestatus)
+            output = stdout.read()
+            output = ((output.decode('utf-8')).replace('\n', '\t')).split('\t')
+
+            if (len(output) == 1):
+                result_slave.append({"Slave_id":""+data[i]["id"]+"","Error":"복제 과정 중 오류가 발생했습니다"})
+            else:
+                result_slave.append({"Slave_id":""+data[i]["id"]+"","Slave_IO_Running":""+output[67]+"", "Slave_SQL_Running":""+output[68]+"", "Seconds_Behind_Master":""+output[89]})
+
+    client.close()
+    return(result_master, result_slave)
+
+
+def mysql_save(result_master, result_slave) :
+
+    db = pymysql.connect(host='127.0.0.1', port=3306, user='root', passwd='tnsdud24', db='test', charset='utf8')
+    curs = db.cursor(pymysql.cursors.DictCursor)
+    for i in range(0, len(result_master)) :
+        mr = str(result_master[i]).replace('\'','\"')
+        sql = "insert into master values (\'"+mr+"\')"
+        curs.execute(sql)
+        db.commit()
+
+    for i in range(0, len(result_slave)) :
+        sr = str(result_slave[i]).replace('\'', '\"')
+        sql = "insert into slave values (\'" + sr + "\')"
+        curs.execute(sql)
+        db.commit()
+
+    db.close()
+
 set_repl(repl["id"],repl["pw"])
 
 set_mycnf(data)
@@ -152,8 +246,12 @@ time.sleep(4)
 
 result = get_masterinfo(data)
 
-print(result)
-
 set_slave(result)
 
 start_slave(result)
+
+time.sleep(15)
+
+result_replication(data)
+
+mysql_save(result_master, result_slave)
