@@ -50,7 +50,7 @@
     data () {
       return {
         stepNum: 1,
-        maxStepNum: 6,
+        maxStepNum: 3,
         inputData: {
           serverImg: {
             name: null,

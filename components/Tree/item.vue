@@ -1,9 +1,11 @@
 <template>
-  <ul id="TreeItem" class="list-unstyled list-item p-0">
-    <li><img src="/img/server.gif" alt="" class="img-server"></li>
-    <li class="title">{{title}}</li>
-    <li><button type="button" class="btn-delete" v-if="isDeleteBtn"><i class="glyphicon glyphicon-remove"></i></button></li>
-  </ul>
+  <section id="TreeItem" class="pv-5">
+    <ul class="list-unstyled list-item p-0">
+      <li><img src="/img/server.gif" alt="" class="img-server"></li>
+      <li class="title">{{title}}</li>
+      <li><button type="button" @click="delFunc" class="btn-delete" v-if="isDeleteBtn"><i class="glyphicon glyphicon-remove"></i></button></li>
+    </ul>
+  </section>
 </template>
 
 <script>
@@ -16,9 +18,12 @@
       isDeleteBtn: {
         type: Boolean,
         default: true
+      },
+      delFunc: {
+        type: Function,
+        default: () => {}
       }
-    },
-    methods: {}
+    }
   }
 </script>
 
@@ -26,7 +31,7 @@
   @import "~assets/less/bootstrap/variables.less";
 
   #TreeItem {
-    > li {
+    li {
       display: inline-block;
       padding: 0;
       & + li {

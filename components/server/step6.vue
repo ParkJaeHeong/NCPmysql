@@ -7,7 +7,7 @@
 
     <!--<h6>서버 이미지</h6>-->
     <!--<div class="card p-20 mt-15">-->
-      <!--<ul class="list-unstyle row">-->
+      <!--<ul class="list-unstyled row">-->
         <!--<li class="col-xs-4 col-sm-2">서버 이미지 이름</li>-->
         <!--<li class="col-xs-8 col-sm-4 color-gray-light">{{data.serverImg.name}}</li>-->
         <!--<li class="col-xs-4 col-sm-2">서버 이미지 설명</li>-->
@@ -17,7 +17,7 @@
 
     <h6 class="mt-40">서버</h6>
     <div class="card p-20 mt-15">
-      <ul class="list-unstyle row">
+      <ul class="list-unstyled row">
         <li class="col-xs-4 col-sm-2">스토리지 종류</li>
         <li class="col-xs-8 col-sm-4 color-gray-light">{{data.server.storageType}}&nbsp;</li>
         <li class="col-xs-4 col-sm-2">서버 이름</li>
@@ -35,7 +35,7 @@
 
     <!--<h6 class="mt-40">인증키</h6>-->
     <!--<div class="card p-20 mt-15">-->
-      <!--<ul class="list-unstyle row">-->
+      <!--<ul class="list-unstyled row">-->
         <!--<li class="col-xs-4 col-sm-2">인증키 이름</li>-->
         <!--<li class="col-xs-8 col-sm-4 color-gray-light">{{data.authentication.name}}</li>-->
       <!--</ul>-->
@@ -43,7 +43,7 @@
 
     <!--<h6 class="mt-40">Access Control Group</h6>-->
     <!--<div class="card p-20 mt-15">-->
-      <!--<ul class="list-unstyle row">-->
+      <!--<ul class="list-unstyled row">-->
         <!--<li class="col-xs-4 col-sm-2">ACG 이름</li>-->
         <!--<li class="col-xs-8 col-sm-4 color-gray-light">{{data.setUpAcg.name}}</li>-->
       <!--</ul>-->
@@ -51,11 +51,11 @@
 
     <h6 class="mt-40">복제 환경 설정</h6>
     <div class="card p-20 mt-15">
-      <ul class="list-unstyle row">
-        <li class="col-xs-4 col-sm-2">복제 환경 구성</li>
-        <li class="col-xs-8 col-sm-2 color-gray-light">{{data.server.template}}</li>
-        <li class="col-xs-4 col-sm-2">서버 구성</li>
-        <li class="col-xs-8 col-sm-6 color-gray-light">{{getSettingStructure()}}</li>
+      <ul class="list-unstyled row">
+        <li class="col-xs-4 col-sm-2 col-lg-2">복제 환경 구성</li>
+        <li class="col-xs-8 col-sm-10 col-lg-2 color-gray-light">{{data.server.template}}</li>
+        <li class="col-xs-4 col-sm-2 col-lg-2">서버 구성</li>
+        <li class="col-xs-8 col-sm-10 col-lg-6 color-gray-light">{{getSettingStructure()}}</li>
       </ul>
     </div>
     <hr class="mv-40">

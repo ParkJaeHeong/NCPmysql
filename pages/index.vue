@@ -10,7 +10,7 @@
 <script>
   export default {
     async asyncData ({ redirect }) {
-      // redirect('/server')
+      redirect('/server')
     }
   }
 </script>

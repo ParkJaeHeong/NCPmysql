@@ -10,7 +10,7 @@
         <dropdown ref="dropdown">
           <btn type="default" class="dropdown-toggle">{{ data.template }}<span class="caret ml-10"></span></btn>
           <template slot="dropdown">
-            <li class="dropdown-item" v-for="item in serverTemplate" @click="setTemplate(item)" v-if="item.serverNum <= data.serverNum"><a>{{item.title}}</a></li>
+            <li class="dropdown-item" v-for="(item, index) in serverTemplate" :key="index" @click="setTemplate(item)" v-if="item.serverNum <= data.serverNum"><a>{{item.title}}</a></li>
           </template>
         </dropdown>
         <button type="button" @click="addServer" class="btn btn-primary ml-10">서버 추가</button>
@@ -22,7 +22,7 @@
       <div class="col-sm-4">
         <div class="card p-20">
           <draggable v-model="serverList" class="dragArea" :options="{group:'server'}">
-            <div v-for="(item, index) in serverList" :key="index" class="m-10">
+            <div v-for="(item, index) in serverList" :key="index">
               <item :title="item.title" :isDeleteBtn="false"/>
             </div>
           </draggable>
@@ -34,11 +34,39 @@
 
       <div class="col-sm-8">
         <div class="card p-20">
-          <draggable v-model="serverStructure" class="dragArea" :options="{group:'server'}">
-            <Tree draggable
-                  v-model="serverStructure"
-                  :template="template"/>
+          <!-- dep1 -->
+          <draggable v-model="serverStructure" class="dragArea dep1" :options="{group:'server'}">
+            <div v-for="(item, index) in serverStructure" :key="index">
+              <div @click="setDeleteItem(item, [index])">
+                <item :title="item.title" :delFunc="delItem"/>
+              </div>
+              <!-- dep2 -->
+              <draggable v-model="item.children" class="dragArea dep2" :options="{group:'server'}">
+                <div v-for="(item2, index2) in item.children" :key="index2" v-if="item.children[0]">
+                  <div @click="setDeleteItem(item2, [index, index2])">
+                    <item :title="item2.title" :delFunc="delItem"/>
+                  </div>
+                  <!-- dep3 -->
+                  <draggable v-model="item2.children" class="dragArea dep3" :options="{group:'server'}">
+                    <div v-for="(item3, index3) in item2.children" :key="index3" v-if="item2.children[0]">
+                      <div @click="setDeleteItem(item3, [index, index2, index3])">
+                        <item :title="item3.title" :delFunc="delItem"/>
+                      </div>
+                      <!-- dep4 -->
+                      <draggable v-model="item3.children" class="dragArea dep4" :options="{group:'server'}">
+                        <div v-for="(item4, index4) in item3.children" :key="index4"  v-if="item3.children[0]">
+                          <div @click="setDeleteItem(item4, [index, index2, index3, index4])">
+                            <item :title="item4.title" :delFunc="delItem"/>
+                          </div>
+                        </div>
+                      </draggable>
+                    </div>
+                  </draggable>
+                </div>
+              </draggable>
+            </div>
           </draggable>
+          <!--<Tree :treeData.sync="serverStructure" />-->
         </div>
       </div>
 
@@ -58,8 +86,8 @@
     <hr class="mv-40">
 
     <div class="text-center">
-      <button type="button" class="btn-prev btn btn-lg btn-default" @click="prevFunc">이전</button>
-      <button type="button" class="btn-next btn btn-lg btn-primary" @click="beforeSubmit(nextFunc)">다음</button>
+      <button type="button" class="btn-prev btn btn-lg btn-default" @click="beforeSubmit(prevFunc, false)">이전</button>
+      <button type="button" class="btn-next btn btn-lg btn-primary" @click="beforeSubmit(nextFunc, true)">다음</button>
     </div>
 
     <modal v-model="openModal" title="설정 미완료" size="sm" :header="false" :footer="false">
@@ -73,8 +101,8 @@
 </template>
 
 <script>
-  import Item from '~/components/TreeItem.vue'
-  import Tree from 'vue-draggable-tree'
+  import Item from '~/components/Tree/item.vue'
+  import Tree from '~/components/Tree'
   import draggable from 'vuedraggable'
   import {Dropdown, Btn, Modal} from 'uiv'
 
@@ -108,20 +136,23 @@
       }
     },
     data () {
+      let init = [{
+        key: '1',
+        title: `${this.data.serverName}001`,
+        children: []
+      }]
+      let temp = init
+      if (this.p_serverStructure[0]) {
+        temp = this.p_serverStructure
+      }
+
       return {
         template: Item,
         lastNum: this.data.serverNum,
-        initList: [{
-          key: '1',
-          title: `${this.data.serverName}001`
-        }],
+        initList: init,
         serverList: this.p_serverList,
-        serverStructure: this.p_serverStructure,
+        serverStructure: temp,
         settingList: this.p_settingList,
-        newServerStructure: [{
-          key: '1',
-          title: `${this.data.serverName}001`
-        }],
         serverTemplate: [
           { id: 1, serverNum: 2, title: '2대, M-S' },
           { id: 2, serverNum: 3, title: '3대, M-S-S' },
@@ -129,17 +160,20 @@
           { id: 4, serverNum: 4, title: '4대, M-S-S-S' },
           { id: 5, serverNum: 4, title: "4대, M-M'-S-S" }
         ],
-        openModal: false
+        openModal: false,
+        deleteInfo: null
       }
     },
-    mounted () {
+    created () {
       this.resetServer()
     },
     methods: {
-      beforeSubmit (Func) {
-        if (this.serverStructure.length > 1 || this.serverList.length !== 0) {
-          this.openModal = true
-          return
+      beforeSubmit (Func, flag) {
+        if (flag) {
+          if (this.serverStructure.length > 1 || this.serverList.length !== 0) {
+            this.openModal = true
+            return
+          }
         }
         this.settingList = []
         this.setSettingList(this.serverStructure[0], null)
@@ -152,7 +186,8 @@
         for (let i = startNum; i <= this.data.serverNum; i++) {
           let tempObject = {
             key: i,
-            title: `${this.data.serverName}00${i}`
+            title: `${this.data.serverName}00${i}`,
+            children: []
           }
           this.serverList.push(tempObject)
         }
@@ -162,15 +197,15 @@
         this.serverList = []
         this.setServerList(item.serverNum + 1)
         if (item.id === 1) {
-          this.serverStructure = [{key: 1, title: `${this.data.serverName}001`, children: [{key: 2, title: `${this.data.serverName}002`}]}]
+          this.serverStructure = [{key: 1, title: `${this.data.serverName}001`, children: [{key: 2, title: `${this.data.serverName}002`, children: []}]}]
         } else if (item.id === 2) {
-          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002` }, { key: 3, title: `${this.data.serverName}003` } ] } ]
+          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002`, children: [] }, { key: 3, title: `${this.data.serverName}003`, children: [] } ] } ]
         } else if (item.id === 3) {
-          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002`, children: [ { key: 3, title: `${this.data.serverName}003` } ] } ] } ]
+          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002`, children: [ { key: 3, title: `${this.data.serverName}003`, children: [] } ] } ] } ]
         } else if (item.id === 4) {
-          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002` }, { key: 3, title: `${this.data.serverName}003` }, { key: 4, title: `${this.data.serverName}004` } ] } ]
+          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002` }, { key: 3, title: `${this.data.serverName}003`, children: [] }, { key: 4, title: `${this.data.serverName}004`, children: [] } ] } ]
         } else if (item.id === 5) {
-          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002`, children: [ { key: 3, title: `${this.data.serverName}003` }, { key: 4, title: `${this.data.serverName}004` } ] } ] } ]
+          this.serverStructure = [ { key: 1, title: `${this.data.serverName}001`, children: [ { key: 2, title: `${this.data.serverName}002`, children: [ { key: 3, title: `${this.data.serverName}003`, children: [] }, { key: 4, title: `${this.data.serverName}004`, children: [] } ] } ] } ]
         }
       },
       addServer () {
@@ -187,12 +222,6 @@
         for (let i in this.serverList) {
           if (this.serverList[i].key === this.data.serverNum) {
             this.serverList.splice(i, 1)
-            this.data.serverNum--
-          }
-        }
-        for (let i in this.serverStructure) {
-          if (this.serverStructure[i].key === this.data.serverNum) {
-            this.serverStructure.splice(i, 1)
             this.data.serverNum--
           }
         }
@@ -216,19 +245,19 @@
         if (masterId === null) {
           tempObject = {
             id: `${item.key}`,
-            master: 'Null'
+            master: masterId
           }
         } else {
           if (this.setArrayChildren(item.children)[0]) {
             tempObject = {
               id: `${item.key}`,
-              master: `${masterId}`,
+              master: masterId,
               slave: this.setArrayChildren(item.children)
             }
           } else {
             tempObject = {
               id: `${item.key}`,
-              master: `${masterId}`
+              master: masterId
             }
           }
         }
@@ -237,15 +266,71 @@
       setArrayChildren (arr) {
         let result = []
         for (let i in arr) {
-          result.push(`${arr[i].key}`)
+          result.push(Number(arr[i].key))
         }
         return result
+      },
+      delItem () {
+        setTimeout(() => {
+          let iArr = this.deleteInfo.indexArr
+          let temp = null
+
+          // add left List
+          this.addLeftList(JSON.parse(JSON.stringify(this.deleteInfo.item)))
+
+          // remove right List
+          if (iArr.length === 1) {
+            temp = this.serverStructure[iArr[0]].children
+            this.serverStructure.splice(iArr[0], 1)
+            if (temp[0]) {
+              for (let i in temp) {
+                this.serverStructure.push(temp[i])
+              }
+            }
+          } else if (iArr.length === 2) {
+            temp = this.serverStructure[iArr[0]].children[iArr[1]].children
+            this.serverStructure[iArr[0]].children.splice(iArr[1], 1)
+            if (temp[0]) {
+              for (let i in temp) {
+                this.serverStructure[iArr[0]].children.push(temp[i])
+              }
+            }
+          } else if (iArr.length === 3) {
+            temp = this.serverStructure[iArr[0]].children[iArr[1]].children[iArr[2]].children
+            this.serverStructure[iArr[0]].children[iArr[1]].children.splice(iArr[2], 1)
+            if (temp[0]) {
+              for (let i in temp) {
+                this.serverStructure[iArr[0]].children[iArr[1]].children.push(temp[i])
+              }
+            }
+          } else {
+            this.serverStructure[iArr[0]].children[iArr[1]].children[iArr[2]].children.splice(iArr[3], 1)
+          }
+          // console.log('temp', temp)
+        }, 5)
+      },
+      addLeftList (item) {
+        item.children = []
+        this.serverList.push(item)
+      },
+      setDeleteItem (item, indexArr) {
+        this.deleteInfo = {
+          item: item,
+          indexArr: indexArr
+        }
+        // console.log(this.deleteInfo)
       }
     }
   }
 </script>
 
 <style lang="less">
+  .dragArea {
+    min-height: 15px;
+    .dragArea {
+      margin-left: 50px;
+    }
+  }
   .ant-tree li .ivu-tree-children {
     padding-left: 40px !important;
   }
