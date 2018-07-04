@@ -11,6 +11,7 @@ serverlist = ["106.10.42.44", "106.10.42.67", "106.10.42.151", "106.10.42.158", 
 
 data = json.loads(sys.argv[1])
 repl = json.loads(sys.argv[2])
+host = json.loads(sys.argv[3])
 
 result_master = []
 result_slave = []
@@ -18,6 +19,46 @@ result_slave = []
 # 입력받은 개수 만큼 서버 할당
 for i in range(0, len(data)) :
     data[i]["ip"] = ''+serverlist[i]+''
+
+# 전체 롤백
+def rollback(data, repl):
+    for i in range(0, len(data)):
+
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
+
+        try:
+            client.connect('' + data[i]["ip"] + '', 22, 'root')
+        except :
+            print("서버에 접속할 수 없습니다")
+
+
+        if (data[i]["master"] == "Null"):
+            cmd_list_master = ['mysql -e \"reset master\"', 'mysql -e \"drop user ' + repl["id"] + '\"',
+                               'sed -i \'/log-bin/d\' /etc/my.cnf', 'sed -i \'/server-id/d\' /etc/my.cnf']
+            req_master = ';'.join(cmd_list_master)
+            client.exec_command(req_master)
+            client.exec_command('systemctl restart mysqld')
+            client.close()
+
+        elif ('slave' in data[i]):
+            cmd_list_dual = ['mysql -e \"stop slave\"', 'mysql -e \"reset slave all\"', 'mysql -e \"reset master\"',
+                             'mysql -e \"drop user ' + repl["id"] + '\"',
+                             'sed -i \'/log-bin/d\' /etc/my.cnf', 'sed -i \'/server-id/d\' /etc/my.cnf',
+                             'sed -i \'/log-slave-updates/d\' /etc/my.cnf', 'sed -i \'/report-host/d\' /etc/my.cnf']
+            req_dual = ';'.join(cmd_list_dual)
+            client.exec_command(req_dual)
+            client.exec_command('systemctl restart mysqld')
+            client.close()
+
+        else:
+            cmd_list_slave = ['mysql -e \"stop slave\"', 'mysql -e \"reset slave all\"',
+                              'mysql -e \"drop user ' + repl["id"] + '\"', 'sed -i \'/server-id/d\' /etc/my.cnf',
+                              'sed -i \'/report-host/d\' /etc/my.cnf']
+            req_slave = ';'.join(cmd_list_slave)
+            client.exec_command(req_slave)
+            client.exec_command('systemctl restart mysqld')
+            client.close()
 
 # repl 계정 생성
 def set_repl(id, pw):
@@ -30,8 +71,8 @@ def set_repl(id, pw):
             client.connect(''+data[i]["ip"]+'', 22, 'root')
         except:
                 print("서버에 접속할 수 없습니다")
+                rollback(data, repl)
                 sys.exit(1)
-
 
         client.exec_command('mysql -e \"Grant replication slave on *.* to \''+id+'\'@\'%\' identified by \''+pw+'\'\"')
 
@@ -46,6 +87,7 @@ def set_mycnf(data) :
                 client.connect('' +data[i]["ip"]+ '', 22, 'root')
         except:
                 print("서버에 접속할 수 없습니다")
+                rollback(data, repl)
                 sys.exit(1)
 
         if (data[i]["master"]=="Null") :
@@ -81,6 +123,7 @@ def get_masterinfo(data) :
                  client.connect('' + data[i]["ip"] + '', 22, 'root')
              except:
                  print("서버에 접속할 수 없습니다")
+                 rollback(data, repl)
                  sys.exit(1)
 
              cmd_list_master = ['mysql -e \"show master status\"']
@@ -88,7 +131,6 @@ def get_masterinfo(data) :
              stdin, stdout, stderr = client.exec_command(req_master)
 
              output = stdout.read()
-             print(output)
              result1 = output.decode('ascii')
              result2 = str(result1)
              parser = result2.replace('\n', '\t')
@@ -117,6 +159,7 @@ def set_slave(result) :
                         client.connect('' + result[i]["ip"] + '', 22, 'root')
                     except:
                         print("서버에 접속할 수 없습니다")
+                        rollback(data, repl)
                         sys.exit(1)
 
                     cmd_list_master = ['mysql -e \"change master to ', 'master_host = \'' +ip+ '\',', 'master_port = 3306,', 'master_user = \'' +repl["id"]+ '\',',
@@ -159,6 +202,7 @@ def result_replication(data) :
             client.connect('' + data[i]["ip"] + '', 22, 'root')
         except:
             print("서버에 접속할 수 없습니다")
+            rollback(data, repl)
             sys.exit(1)
 
 
@@ -222,7 +266,7 @@ def result_replication(data) :
 
 def mysql_save(result_master, result_slave) :
 
-    db = pymysql.connect(host='127.0.0.1', port=3306, user='root', passwd='tnsdud24', db='test', charset='utf8')
+    db = pymysql.connect(host='127.0.0.1', port=3306, user='root', passwd=None, db='test', charset='utf8')
     curs = db.cursor(pymysql.cursors.DictCursor)
     for i in range(0, len(result_master)) :
         mr = str(result_master[i]).replace('\'','\"')
@@ -236,6 +280,7 @@ def mysql_save(result_master, result_slave) :
         curs.execute(sql)
         db.commit()
 
+    print("{masterInfo: "+str(result_master)+", slaveInfo: "+str(result_slave)+"}")
     db.close()
 
 set_repl(repl["id"],repl["pw"])
@@ -250,7 +295,7 @@ set_slave(result)
 
 start_slave(result)
 
-time.sleep(15)
+time.sleep(20)
 
 result_replication(data)
 

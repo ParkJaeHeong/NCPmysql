@@ -9,7 +9,7 @@
     <div class="row">
       <div class="col-sm-8 col-sm-push-2">
         <StepMark class="mb-md"
-                  :titles="['서버 설정', '복제 환경 설정', '최종 확인']"
+                  :titles="['서버 설정', '복제 환경 설정', '최종 확인', '서버 생성 결과']"
                   :stepActive="stepNum" />
         <!--<StepMark class="mb-md"-->
                   <!--:titles="['서버 이미지 선택', '서버 설정', '인증키 설정', '네트워크 접근 설정', '복제 환경 설정', '최종 확인']"-->
@@ -22,8 +22,15 @@
         <!--<step4 :inputData="inputData.setUpAcg" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 4"/>-->
         <step5 :data="inputData.server" v-bind.sync="setting" :nextFunc="goNext" :prevFunc="goPrev" v-if="stepNum === 2"/>
         <step6 :data="inputData" :settingList="setting.p_settingList" :nextFunc="createServer" :prevFunc="goPrev" v-if="stepNum === 3"/>
+        <template v-if="stepNum === maxStepNum">
+          <result v-bind="result" v-if="result"/>
+          <clipLoader color="#14adea" v-else/>
+        </template>
+
       </div>
     </div>
+
+
 
   </section>
 </template>
@@ -36,6 +43,8 @@
   import step4 from '~/components/server/step4.vue'
   import step5 from '~/components/server/step5.vue'
   import step6 from '~/components/server/step6.vue'
+  import result from '~/components/server/result.vue'
+  import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 
   export default {
     components: {
@@ -45,12 +54,15 @@
       step3,
       step4,
       step5,
-      step6
+      step6,
+      result,
+      ClipLoader
     },
     data () {
       return {
+        result: null,
         stepNum: 1,
-        maxStepNum: 6,
+        maxStepNum: 4,
         inputData: {
           serverImg: {
             name: null,
@@ -100,15 +112,19 @@
       },
       createServer () {
         console.log('createServer')
+        this.goNext()
         let temp = {
           setting: this.setting.p_settingList,
           dbUser: {
             id: this.inputData.server.cloneId,
             pw: this.inputData.server.clonePw
-          }
+          },
+          host: this.inputData.server.serverName
         }
+        console.log(temp)
         this.axios.post('/api/server', temp).then((resp) => {
           console.log(resp)
+          this.result = resp.data
         }).catch((err) => {
           console.log(err)
         })

@@ -9,8 +9,8 @@
 
 <script>
   export default {
-    async asyncData ({ redirect }) {
-      // redirect('/server')
-    }
+    // beforeCreate () {
+    //   this.$router.push('/server')
+    // }
   }
 </script>
